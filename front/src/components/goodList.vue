@@ -9,98 +9,41 @@
     </el-header>
     <!-- 页面主体区域 -->
     <el-container>
-      <!-- 侧边栏 -->
-      <el-aside width="200px">
-          <div class="toggle-button">| | |</div>
-          <!-- 侧边栏菜单区域 -->
-          <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF">
-            <!-- 一级菜单 -->
-            <el-submenu index="1">
-              <!-- 一级菜单的模板区 -->
+      <el-header class="customer-menu">
+          <el-menu class="menu" background-color="#333744" text-color="#fff" active-text-color="#66ccff" default-active="/goodList"
+          router  mode="horizontal">
+            <el-menu-item index="/goodList">
               <template slot="title">
-                <!--  图标 -->
                 <i class="el-icon-s-goods"></i>
-                <!-- 文本 -->
-                <span>browse the products</span>
+                <span>browse all the products</span>
               </template>
-              <!-- 二级菜单 -->
-              <el-menu-item index="1-1">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-search"></i>
-                  <!-- 文本 -->
-                  <span>all Products</span>
-                </template>
-              </el-menu-item>
-                <el-menu-item index="1-2">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-search"></i>
-                  <!-- 文本 -->
-                  <span>search a Product</span>
-                </template>
-              </el-menu-item>
-              <!-- 二级菜单 -->
-              <el-menu-item index="1-3">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-search"></i>
-                  <!-- 文本 -->
-                  <span>search a Merchat</span>
-                </template>
-              </el-menu-item>
-            </el-submenu>
-            <!-- 一级菜单 -->
-            <el-submenu index="2">
-              <!-- 一级菜单的模板区 -->
+            </el-menu-item>
+            <el-menu-item index="2" disabled>
               <template slot="title">
-                <!--  图标 -->
+                <i class="el-icon-s-goods"></i>
+                <span>serach products</span>
+              </template>
+            </el-menu-item>
+            <el-menu-item index="/customerShoppingCart">
+              <template slot="title">
                 <i class="el-icon-shopping-cart-2"></i>
-                <!-- 文本 -->
                 <span>shopping cart</span>
               </template>
-            </el-submenu>
-            <!-- 一级菜单 -->
-            <el-submenu index="3">
-              <!-- 一级菜单的模板区 -->
+            </el-menu-item>
+            <el-menu-item index="/customerOrder">
               <template slot="title">
-                <!--  图标 -->
                 <i class="el-icon-s-order"></i>
-                <!-- 文本 -->
-                <span>manage the order</span>
+                <span>My order</span>
               </template>
-            </el-submenu>
-            <!-- 一级菜单 -->
-            <el-submenu index="4">
-              <!-- 一级菜单的模板区 -->
+            </el-menu-item>
+            <el-menu-item index="5" disabled>
               <template slot="title">
-                <!--  图标 -->
                 <i class="el-icon-user-solid"></i>
-                <!-- 文本 -->
                 <span>User center</span>
               </template>
-              <!-- 二级菜单 -->
-              <el-menu-item index="4-1">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-bell"></i>
-                  <!-- 文本 -->
-                  <span>notification</span>
-                </template>
-              </el-menu-item>
-              <!-- 二级菜单 -->
-              <el-menu-item index="4-2">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-mouse"></i>
-                  <!-- 文本 -->
-                  <span>manage the accout</span>
-                </template>
-              </el-menu-item>
-              <!-- 二级菜单 -->
-            </el-submenu>
+            </el-menu-item>
         </el-menu>
-      </el-aside>
+      </el-header>
       <!-- 右侧主体内容 -->
       <el-main>
           <!-- 商品图片 -->
@@ -108,9 +51,7 @@
           <img class="goods2" src="../assets/goods2.png" alt=""> -->
           <!-- 商品基础信息表单 -->
           <template>
-            <el-table
-    :data="tableData"
-    style="width: 100%">
+            <el-table :data="tableData" style="width: 100%">
     <el-table-column type="expand">
       <template slot-scope="props">
         <el-form label-position="left" inline class="demo-table-expand">
@@ -153,6 +94,24 @@
       label="Price"
       prop="price">
     </el-table-column>
+    <el-table-column label="operation">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              circle
+              @click="addToCart(scope.row)"
+            >add to cart</el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                circle
+                @click="createOrder(scope.row)"
+              >buy now</el-button>
+          </template>
+        </el-table-column>
   </el-table>
           </template>
       </el-main>
@@ -161,7 +120,6 @@
 </template>
 
 <script>
-import globalVar from '@/components/globalVar.vue'
 export default {
   data () {
     return {
@@ -169,14 +127,15 @@ export default {
     }
   },
   created () {
-    if (globalVar.userName === '') {
+    if (this.$session.get.username === '') {
       return this.$router.push('/login')
     }
     this.loadAllProduct()
   },
   methods: {
     logout () {
-      window.sessionStorage.clear()
+      this.$session.set('username', '')
+      this.$session.set('userType', '')
       this.$router.push('/login')
     },
     loadAllProduct () {
@@ -188,8 +147,54 @@ export default {
         console.log('error')
         this.$message.error('failed to load products')
       })
+    },
+    addToCart (row) {
+      this.$http.post('cart/addaproducttoshoppingcart/', {
+        username: this.$session.get('username'),
+        productName: row.productName,
+        merchantName: row.merchantName,
+        price: row.price,
+        inventory: 1
+      }).then(response => {
+        // console.log(response.data)
+        this.resp = response.data
+        console.log(this.resp.msg)
+        if (this.resp.status === 200) {
+          this.$message.success('Added product successfully！')
+          this.addProductDialogVisible = false
+          this.loadAllProduct()
+        } else {
+          this.$message.error('Failed to add the product！')
+        }
+      }, response => {
+        console.log('error')
+        this.$message.error('Failed to add the product！')
+      })
+    },
+    createOrder (row) {
+      this.$http.post('order/createorder/', {
+        username: this.$session.get('username'),
+        productName: row.productName,
+        merchantName: row.merchantName,
+        totalprice: row.price,
+        inventory: 1
+      }).then(response => {
+        if (response.data.status === 200) {
+          this.$message.success('create order successfully！')
+        } else {
+          this.$message.error('Failed to create the order！')
+        }
+      }, response => {
+        console.log('error')
+        this.$message.error('Failed to create the order！')
+      })
+    },
+    handleOpen (key, keyPath) {
+      console.log(key, keyPath)
+    },
+    handleClose (key, keyPath) {
+      console.log(key, keyPath)
     }
-
   }
 }
 </script>
@@ -197,6 +202,7 @@ export default {
 <style scoped>
 .home-container {
     height: 100%;
+    background: #444356;
 }
 
 .el-header {
@@ -208,13 +214,13 @@ export default {
     size: 20px;
 }
 
-.el-aside {
+.menu {
     background: #333744;
-    height:100%
 }
 
 .el-main {
     background: #EAEDF1;
+    height:100%;
 }
 
 .toggle-button{

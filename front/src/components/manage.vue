@@ -176,7 +176,6 @@
 </template>
 
 <script>
-import globalVar from '@/components/globalVar.vue'
 export default {
   data () {
     return {
@@ -235,14 +234,15 @@ export default {
     }
   },
   created () {
-    if (globalVar.userName === '') {
+    if (this.$session.get.username === '') {
       this.$router.push('/login')
     }
     this.getUserList()
   },
   methods: {
     logout () {
-      window.sessionStorage.clear()
+      this.$session.set('username', '')
+      this.$session.set('userType', '')
       this.$router.push('/login')
     },
     getUserList () {

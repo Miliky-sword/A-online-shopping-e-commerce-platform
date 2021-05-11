@@ -36,8 +36,6 @@
 </template>
 
 <script>
-// 引入全局变量
-import globalVar from '@/components/globalVar.vue'
 export default {
   data () {
     return {
@@ -82,14 +80,12 @@ export default {
             this.$message.error(this.resp.msg)
             this.$router.push('/login')
           } else {
+            this.$session.set('username', this.resp.userName)
+            this.$session.set('userType', this.resp.userType)
             this.$message.success('Login success!')
-            globalVar.userName = this.resp.userName
-            globalVar.userType = this.resp.userType
-            console.log(globalVar.userName)
-            console.log(globalVar.userType)
-            if (globalVar.userType === 0) {
+            if (this.$session.get('userType') === 0) {
               this.$router.push('/goodList')
-            } else if (globalVar.userType === 1) {
+            } else if (this.$session.get('userType') === 1) {
               this.$router.push('/merchantManage')
             } else {
               this.$router.push('/manage')

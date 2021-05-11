@@ -11,62 +11,28 @@
     <!-- 页面主体区域 -->
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside width="250px">
-          <div class="toggle-button">| | |</div>
-          <!-- 侧边栏菜单区域 -->
-          <el-menu background-color="#444356" text-color="#fff" active-text-color="#409EFF">
-            <!-- 一级菜单 -->
-            <el-submenu index="1">
-              <!-- 一级菜单的模板区 -->
+          <el-header class="menu-aside" width="250px">
+          <el-menu class="menu" background-color="#333744" text-color="#fff" active-text-color="#66ccff" default-active="/merchantManage" router mode="horizontal">
+            <el-menu-item index="/merchantManage" router>
               <template slot="title">
-                <!--  图标 -->
                 <i class="el-icon-s-goods"></i>
-                <!-- 文本 -->
-                <span>product on the shelves</span>
+                <span>products on the shelves</span>
               </template>
-            </el-submenu>
-            <!-- 一级菜单 -->
-            <!-- 一级菜单 -->
-            <el-submenu index="2">
-              <!-- 一级菜单的模板区 -->
+            </el-menu-item>
+            <el-menu-item index="/merchantOrder">
               <template slot="title">
-                <!--  图标 -->
                 <i class="el-icon-s-order"></i>
-                <!-- 文本 -->
                 <span>My order</span>
               </template>
-            </el-submenu>
-            <!-- 一级菜单 -->
-            <el-submenu index="3">
-              <!-- 一级菜单的模板区 -->
+            </el-menu-item>
+            <el-menu-item index="5" disabled>
               <template slot="title">
-                <!--  图标 -->
                 <i class="el-icon-user-solid"></i>
-                <!-- 文本 -->
-                <span>User Information</span>
+                <span>User center</span>
               </template>
-              <!-- 二级菜单 -->
-              <el-menu-item index="3-1">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-bell"></i>
-                  <!-- 文本 -->
-                  <span>notification</span>
-                </template>
-              </el-menu-item>
-              <!-- 二级菜单 -->
-              <el-menu-item index="3-2">
-                <template slot="title">
-                  <!--  图标 -->
-                  <i class="el-icon-mouse"></i>
-                  <!-- 文本 -->
-                  <span>manage the account</span>
-                </template>
-              </el-menu-item>
-              <!-- 二级菜单 -->
-            </el-submenu>
+            </el-menu-item>
         </el-menu>
-      </el-aside>
+      </el-header>
       <!-- 右侧主体内容 -->
       <el-main>
           <!-- 商品图片 -->
@@ -156,7 +122,6 @@
 </template>
 
 <script>
-import globalVar from '@/components/globalVar.vue'
 export default {
   data () {
     return {
@@ -168,7 +133,7 @@ export default {
         email: '',
         mobile: ''
       },
-      glusername: globalVar.userName,
+      glusername: this.$session.get('username'),
 
       addProductFormRules: {
         productName: [
@@ -202,21 +167,23 @@ export default {
     }
   },
   created () {
-    if (globalVar.userName === '') {
+    if (this.$session.get('username') === '') {
       return this.$router.push('/login')
     }
+    console.log(111)
+    console.log(this.$session.get('username'))
     this.loadAllProduct()
   },
   methods: {
     logout () {
-      window.sessionStorage.clear()
+      this.$session.set('username', '')
+      this.$session.set('userType', '')
       this.$router.push('/login')
     },
     loadAllProduct () {
-      console.log(this.glusername)
       this.$http.post('product/getProduct/', {
         isAll: 0,
-        merchantName: this.glusername
+        merchantName: this.$session.get('username')
       }).then(response => {
         console.log(response.data.data.dataArray)
         this.productTableData = response.data.data.dataArray
@@ -228,11 +195,10 @@ export default {
       this.$refs.addProductFormRef.validate(valid => {
         // console.log(valid)
         // 表单预校验失败
-        console.log(globalVar.userName)
         if (!valid) return
         this.$http.post('product/addProduct/', {
           productName: this.addProductForm.productName,
-          merchantName: globalVar.userName,
+          merchantName: this.$session.get('username'),
           price: this.addProductForm.price,
           inventory: this.addProductForm.inventory,
           dateInProduction: this.addProductForm.dateInProduction,
