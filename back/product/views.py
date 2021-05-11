@@ -43,7 +43,8 @@ def addProduct(request):
         req = json.loads(request.body)
         print(req)
         product.productName = req['productName']
-        product.merchantName = req['merchantName']
+        # product.merchantName = req['merchantName']
+        product.merchantName = request.session['username']
         product.status = 1
         product.price = req['price']
         product.inventory = req['inventory']
