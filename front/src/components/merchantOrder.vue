@@ -8,8 +8,7 @@
     </el-header>
   <el-container class="main-container">
           <el-header class="menu-aside" width="250px">
-          <div class="toggle-button">| | |</div>
-          <el-menu class="menu" background-color="#333744" text-color="#fff" active-text-color="#66ccff" default-active="/merchantManage" router mode="horizontal">
+          <el-menu class="menu" background-color="#333744" text-color="#fff" active-text-color="#66ccff" default-active="/merchantOrder" router mode="horizontal">
             <el-menu-item index="/merchantManage">
               <template slot="title">
                 <i class="el-icon-s-goods"></i>
@@ -44,23 +43,8 @@
               type="primary"
               icon="el-icon-edit"
               size="mini"
-              @click="payOrder(scope.row)"
-            >pay the order</el-button>
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              @click="confirmdelivery(scope.row)"
-            >confirm the delivery</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="cancel">
-          <template slot-scope="scope" vertical>
-              <el-button
-              type="primary"
-              icon="el-icon-edit"
-              @click="cancelOrder(scope.row)"
-            >cancel the order</el-button>
+              @click="deliverytheproduct(scope.row)"
+            >deliver the products</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -89,8 +73,8 @@ export default {
       this.$router.push('/login')
     },
     loadAllofOrder () {
-      this.$http.post('order/getcustomerorders/', {
-        username: this.$session.get('username')
+      this.$http.post('order/getmerchantorders/', {
+        merchantName: this.$session.get('username')
       }).then(response => {
         console.log(response.data.data.dataArray)
         this.orderTableData = response.data.data.dataArray
@@ -120,6 +104,17 @@ export default {
       }, response => {
         console.log('error')
         this.$message.error(response.data.msg)
+      })
+    },
+    deliverytheproduct (row) {
+      this.$http.post('order/changeorderstatusdelivering/', {
+        id: row.id
+      }).then(response => {
+        this.$message.info(response.data.msg)
+        this.loadAllofOrder()
+      }, response => {
+        console.log('error')
+        this.$message.info(response.data.msg)
       })
     }
   }

@@ -37,6 +37,12 @@ def change_order_status_payed(request):
     if request.method == "POST":
         req = json.loads(request.body)
         id = req['id']
+        order = Order.objects.filter(id = id).first()
+        if order.status != 'Pending':
+            return JsonResponse({
+                'status' : 501,
+                'msg'    : 'You have payed the order!'
+            })
         order = Order.objects.filter(id = id)
         try:
             order.update(status = 'Payed')
@@ -57,6 +63,12 @@ def change_order_status_delivering(request):
     if request.method == "POST":
         req = json.loads(request.body)
         id = req['id']
+        order = Order.objects.filter(id = id).first()
+        if order.status != 'Payed':
+            return JsonResponse({
+                'status' : 501,
+                'msg'    : 'the order must be payed first!'
+            })
         order = Order.objects.filter(id = id)
         try:
             order.update(status = 'Out for delivery')
@@ -77,6 +89,12 @@ def change_order_status_delivered(request):
     if request.method == "POST":
         req = json.loads(request.body)
         id = req['id']
+        order = Order.objects.filter(id = id).first()
+        if order.status != 'Out for delivery':
+            return JsonResponse({
+                'status' : 501,
+                'msg'    : 'the order is not delivering'
+            })
         order = Order.objects.filter(id = id)
         try:
             order.update(status = 'Delivered')
@@ -97,6 +115,7 @@ def change_order_status_canceled(request):
     if request.method == "POST":
         req = json.loads(request.body)
         id = req['id']
+        order = Order.objects.filter(id = id).first()
         order = Order.objects.filter(id = id)
         try:
             order.update(status = 'Canceled')
