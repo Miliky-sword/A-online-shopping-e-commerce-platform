@@ -94,7 +94,7 @@
       label="Price"
       prop="price">
     </el-table-column>
-    <el-table-column label="operation">
+    <el-table-column label="operation" disabled>
           <template slot-scope="scope">
             <el-button
               type="primary"

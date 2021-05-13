@@ -5,5 +5,6 @@ urlpatterns = [
     path(r'getProduct/', getProduct),
     path(r'addProduct/', addProduct),
     path(r'changeProductStatus/', changeProductStatus),
-    path(r'getAvailableProduct/', getAvailableProduct)
+    path(r'getAvailableProduct/', getAvailableProduct),
+    path(r'delProduct/', delProduct),
 ]

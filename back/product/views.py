@@ -86,6 +86,27 @@ def getAvailableProduct(request):
             'data' : data
         })
 
+def delProduct(request):
+    '''
+    该方法为商品浏览页面返回可用的商品
+    '''
+    if request.method == "POST":
+        req = json.loads(request.body)
+        id = req['id']
+        products = Product.objects.filter(id = id)
+        try:
+            products.delete()
+        except:
+            return JsonResponse({
+                'status' : 500,
+                'msg' : 'del failed'
+            })
+        print("del sc")
+        return JsonResponse({
+            'status' : 200,
+            'msg' : 'del success'
+        })
+
 
 
 

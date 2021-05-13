@@ -54,34 +54,12 @@
         <el-table-column label="operation">
           <template slot-scope="scope">
             <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              circle
-              @click="showEditDialog(scope.row.username)"
-            ></el-button>
-            <el-button
               type="danger"
               icon="el-icon-delete"
               size="mini"
               circle
-              @click="removeUserByName(scope.row.username)"
-            ></el-button>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="角色分配"
-              :enterable="false"
-              placement="top"
-            >
-              <el-button
-                type="warning"
-                icon="el-icon-setting"
-                size="mini"
-                circle
-                @click="showSetRole(scope.username)"
-              ></el-button>
-            </el-tooltip>
+              @click="delProduct(scope.row)"
+            >delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -223,8 +201,17 @@ export default {
         this.addProductDialogVisible = false
         // this.getUserList()
       })
+    },
+    delProduct (row) {
+      this.$http.post('product/delProduct/', {
+        id: row.id
+      }).then(response => {
+        this.$message.info(response.data.msg)
+      }, response => {
+        this.$message.info(response.data.msg)
+      })
+      this.loadAllProduct()
     }
-
   }
 }
 </script>
