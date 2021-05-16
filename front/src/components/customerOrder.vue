@@ -89,7 +89,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get.username === '') {
+    if (this.$session.get('username') === '') {
       return this.$router.push('/login')
     }
     this.loadAllofOrder()

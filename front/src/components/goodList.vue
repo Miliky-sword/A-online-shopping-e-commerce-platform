@@ -127,7 +127,9 @@ export default {
     }
   },
   created () {
-    if (this.$session.get.username === '') {
+    console.log('11111')
+    if (this.$session.get('username') === '') {
+      console.log('2222')
       return this.$router.push('/login')
     }
     this.loadAllProduct()
