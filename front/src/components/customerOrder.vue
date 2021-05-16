@@ -1,5 +1,5 @@
 <template>
-    <el-container class="home-container">
+  <el-container class="home-container">
   <el-header class="header">
       <div>
             <span>welcome to the e-commerce platform</span>
@@ -76,8 +76,35 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-button @click="commentDialogVisible=true"> show comment Dialog</el-button>
       </el-main>
     </el-container>
+    <el-dialog title="Mark and Comment !" :visible.sync="commentDialogVisible" width="30%" @close="commentDialogClosed">
+      <div>
+        How do you think of this product ?
+        Please give it stars and comment on it !
+      </div>
+      <div style="margin: 40px 0;"></div>
+      <div class="block">
+        <span class="demonstration"></span>
+          <el-rate
+            v-model="starValue"
+            :colors="colors">
+          </el-rate>
+        </div>
+        <div style="margin: 40px 0;"></div>
+        <el-input
+          type="textarea"
+          autosize
+          placeholder="请输入内容"
+          v-model="textarea1">
+        </el-input>
+      <div style="margin: 40px 0;"></div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="commentDialogVisible = false">cancel</el-button>
+        <el-button type="primary" >submit</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -85,7 +112,11 @@
 export default {
   data () {
     return {
-      orderTableData: []
+      orderTableData: [],
+      commentDialogVisible: false,
+      commentForm: {},
+      starValue: null,
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     }
   },
   created () {
@@ -129,10 +160,15 @@ export default {
       }).then(response => {
         this.$message.success(response.data.msg)
         this.loadAllofOrder()
+        this.commentDialogVisible = true
       }, response => {
         console.log('error')
         this.$message.error(response.data.msg)
       })
+    },
+    commentDialogClosed () {
+      this.starValue = null
+      this.$refs.commentFormRef.resetFields()
     }
   }
 }

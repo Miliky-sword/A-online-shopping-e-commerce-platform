@@ -113,65 +113,6 @@
         <el-button type="primary" @click="addUser">submit</el-button>
       </span>
     </el-dialog>
-
-    <!-- 修改用户的对话框 -->
-    <el-dialog
-      title="修改用户信息"
-      :visible.sync="editDialogVisible"
-      width="50%"
-      @close="editDialogClosed"
-    >
-      <!-- 内容主体 -->
-      <el-form
-        :model="editUserForm"
-        ref="editUserFormRef"
-        :rules="editUserFormRules"
-        label-width="70px"
-      >
-        <el-form-item label="用户名">
-          <el-input v-model="editUserForm.username" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="editUserForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="手机" prop="mobile">
-          <el-input v-model="editUserForm.mobile"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUser">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 分配角色对话框 -->
-    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%" @close="setRoleDialogClosed">
-      <div>
-        <p>当前用户：{{userInfo.username}}</p>
-        <p>当前角色：{{userInfo.role_name}}</p>
-        <p>
-          分配角色：
-          <el-select
-            v-model="selectRoleId"
-            filterable
-            allow-create
-            default-first-option
-            placeholder="请选择文章标签"
-          >
-            <el-option
-              v-for="item in rolesLsit"
-              :key="item.id"
-              :label="item.roleName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </p>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -234,7 +175,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get.username === '') {
+    if (this.$session.get('username') === '') {
       this.$router.push('/login')
     }
     this.getUserList()

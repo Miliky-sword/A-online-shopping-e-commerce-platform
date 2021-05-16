@@ -35,6 +35,7 @@
         <el-table-column prop="id" label="id"></el-table-column>
         <el-table-column prop="productName" label="productName"></el-table-column>
         <el-table-column prop="totalprice" label="price"></el-table-column>
+        <el-table-column prop="address" label="address"></el-table-column>
         <el-table-column prop="status" label="status"></el-table-column>
         <el-table-column prop="inventory" label="inventory"></el-table-column>
         <el-table-column label="operation">
@@ -61,7 +62,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get.username === '') {
+    if (this.$session.get('username') === '') {
       return this.$router.push('/login')
     }
     this.loadAllofOrder()
