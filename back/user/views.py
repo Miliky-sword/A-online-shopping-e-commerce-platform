@@ -25,7 +25,20 @@ def allUsers(request):
         data = {}
         users = LoginUser.objects.all().values()
         data['data'] = list(users)
-        print(data)
+        # print(data)
+        return JsonResponse({
+            'data' : data
+        }, safe=False)
+
+def allMerUsers(request):
+    '''
+    返回所有用户
+    '''
+    if request.method == 'POST':
+        data = {}
+        users = LoginUser.objects.filter(user_type=1).values()
+        data['dataArray'] = list(users)
+        # print(data)
         return JsonResponse({
             'data' : data
         }, safe=False)
@@ -115,7 +128,8 @@ def login(request):
                             response.set_cookie('password', password)
                             #response.set_cookie('user_type', user.user_type)
                             #response.set_cookie('userid', user.id)
-                            request.session['username'] = username
+                            request.session['username'] = user.username
+                            request.session['userType'] = user.user_type  
                             #response.content = '登录成功'
                             #vaild_code.code_status = 1
                             print("login 2")
@@ -138,3 +152,85 @@ def login(request):
         print(1)
         return JsonResponse(data)
     return HttpResponse(content="jieshu")
+
+def addsig(request):
+    '''
+    url: addsig/
+    该函数为指定用户添加一条签名
+    '''
+    if request.method == 'POST':
+        req = json.loads(request.body)
+        username = req['username']
+        sig = req['sig']
+        usr = LoginUser.objects.filter(username=username).first()
+        usr.sig = sig
+        try:
+            usr.save()
+        except:
+            return JsonResponse({
+                'status' : 500,
+                'msg' : "Sorry! change personalized signature failed"
+            })
+        return JsonResponse({
+            'status' : 200,
+            'msg' : 'The personalized signature has changed'
+        })
+
+def loadinfo(request):
+    '''
+    url: loadinfo/
+    该函数返回指定用户的所有信息
+    '''
+    if request.method == 'POST' :
+        req = json.loads(request.body)
+        username = req['username']
+        print("username", username)
+        try :
+            usr = LoginUser.objects.filter(username=username).values()
+        except:
+            return JsonResponse({
+                'status' : 500,
+                'msg' : "load user's info failed"
+            })
+        data = {}
+        dataArray = list(usr)
+        data['dataArray'] = dataArray
+        return JsonResponse({
+            'status' : 200,
+            'msg' : "load user info done",
+            'data': data
+        })
+
+def editinfo(request):
+    '''
+    url: editinfo/
+    该函数用于修改个人信息
+    '''
+    if request.method == 'POST':
+        req = json.loads(request.body)
+        username = req['username']
+        address = req['address']
+        phonenumber = req['phonenumber']
+        password = req['password']
+        email = req['email']
+        usr = LoginUser.objects.filter(username=username).first()
+        if address != '':
+            usr.address = address
+        if phonenumber != '':
+            usr.phoneNumber = phonenumber
+        if password != '':
+            print(len(setPassword(password)))
+            usr.password = setPassword(password)
+        if email != '':
+            usr.email = email
+        try:
+            usr.save()
+        except:
+            return JsonResponse({
+                'status' : 500,
+                'msg': 'Invalid format! Please check it again!'
+            })
+        return JsonResponse({
+            'status':200,
+            'msg' : 'the information has changed'
+        })

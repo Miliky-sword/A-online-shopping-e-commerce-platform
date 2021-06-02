@@ -1,5 +1,5 @@
 from django.db import models
-#from django.db.models import Manager
+from django.db.models import Manager
 
 # Create your models here.
 class Product(models.Model):
@@ -14,4 +14,16 @@ class Product(models.Model):
     inventory = models.IntegerField(default=999)
     stars = models.FloatField(default=0)
     starsNumber = models.IntegerField(default=0)
+    basePrice = models.FloatField(default=575)
+    
+    
+
+ 
+class Comment(models.Model):
+
+    productId = models.IntegerField(db_index=True)
+    customerId = models.IntegerField()
+    orderId = models.IntegerField()
+    stars = models.IntegerField()
+    neirong = models.CharField(max_length=512)
     

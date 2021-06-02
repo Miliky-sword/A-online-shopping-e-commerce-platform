@@ -8,5 +8,6 @@ urlpatterns = [
     path(r'changeorderstatuscanceled/', change_order_status_canceled),
     path(r'changeorderstatuspayed/', change_order_status_payed),
     path(r'getcustomerorders/', get_customer_orders),
-    path(r'getmerchantorders/', get_merchant_orders)
+    path(r'getmerchantorders/', get_merchant_orders),
+    path(r'statistic/', drawStatistic)
 ]

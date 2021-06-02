@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect,HttpResponse,JsonResponse
 import json
 from shoppingCart.models import shoppingcartP
+from product.models import Product
 
 # Create your views here.
 def all_products_of_shoppingcart(request):
@@ -50,19 +51,35 @@ def add_a_product_to_shoppingcart(request):
         merchantName = req['merchantName']
         price = req['price']
         inventory = req['inventory']
-        sp = shoppingcartP()
-        sp.username = username
-        sp.productName = productName
-        sp.merchantName = merchantName
-        sp.price = price
-        sp.inventory = inventory
-        try:
-            sp.save()
-        except:
-            return JsonResponse({
-                'status' : 500,
-                'msg'    : 'add failed'
-            })
+
+        p = shoppingcartP.objects.filter(username = username, productName=productName, merchantName = merchantName).first()
+        # print(username, productName, merchantName, p)
+        if not p:
+            sp = shoppingcartP()
+            pro = Product.objects.filter(productName=productName, merchantName = merchantName).first()
+            sp.pid = pro.id
+            sp.username = username
+            sp.productName = productName
+            sp.merchantName = merchantName
+            sp.price = price
+            sp.inventory = inventory
+            try:
+                sp.save()
+            except:
+                return JsonResponse({
+                    'status' : 500,
+                    'msg'    : 'add failed'
+                })
+        else:
+            try:
+                p.inventory += inventory
+                p.price += price
+                p.save()
+            except:
+                return JsonResponse({
+                    'status' : 500,
+                    'msg'    : 'add failed!'
+                })
         return JsonResponse({
             'status' : 200,
             'msg'    : 'add success'

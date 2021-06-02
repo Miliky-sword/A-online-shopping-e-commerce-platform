@@ -1,32 +1,79 @@
 <template>
-  <div>
-    <!-- 面包屑导航区 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/login' }">go to log in</el-breadcrumb-item>
-      <el-breadcrumb-item>user management</el-breadcrumb-item>
-      <el-breadcrumb-item>user list</el-breadcrumb-item>
-      <el-button @click="logout">log out</el-button>
-    </el-breadcrumb>
-    <!-- 卡片视图 -->
-    <el-card>
-      <!-- 搜索 添加 -->
-      <el-row :gutter="30">
-        <el-col :span="8">
-          <el-input placeholder="please input user's name" v-model="queryInfo.query" clearable @clear="getUserList">
-            <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
-          </el-input>
-        </el-col>
-        <el-col :span="4">
-          <el-button type="primary" @click="addDialogVisible = true">add a user</el-button>
-        </el-col>
-      </el-row>
+  <el-container class="home-container">
+    <!-- 头部区域 -->
+    <el-header>
+      <div>
+        <span>Welcome to the online shopping e-commerce platform -- Manager</span>
+      </div>
+      <el-button
+        type="info"
+        @click="logout"
+      >
+        log out
+      </el-button>
+    </el-header>
+    <!-- 页面主体区域 -->
+    <el-container>
+      <!-- 侧边栏 -->
+      <el-header
+        class="menu-aside"
+        width="250px"
+      >
+        <el-menu
+          class="menu"
+          background-color="#333744"
+          text-color="#fff"
+          active-text-color="#66ccff"
+          default-active="/manage"
+          router
+          mode="horizontal"
+        >
+          <el-menu-item
+            index="/manage"
+            router
+          >
+            <template slot="title">
+              <i class="el-icon-s-goods" />
+              <span>user list</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/managerStatisticmer">
+            <template slot="title">
+              <i class="el-icon-s-order" />
+              <span>Merchants' sales</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
+            index="/manageruserinfo"
+          >
+            <template slot="title">
+              <i class="el-icon-user-solid" />
+              <span>User center</span>
+            </template>
+          </el-menu-item>
+        </el-menu>
+      </el-header>
       <!-- 用户列表区域 -->
-      <el-table :data="this.userlist" border stripe>
+      <el-table
+        :data="this.userlist"
+        border
+        stripe
+        class="table0"
+      >
         <!-- stripe: 斑马条纹
         border：边框-->
-        <el-table-column prop="username" label="username"></el-table-column>
-        <el-table-column prop="user_type" label="role"></el-table-column>
-        <el-table-column prop="address" label="address"></el-table-column>
+        <el-table-column
+          prop="username"
+          label="username"
+        />
+        <el-table-column
+          prop="user_type"
+          label="role"
+        />
+        <el-table-column
+          prop="address"
+          label="address"
+        />
         <!--
         <el-table-column label="status">
           <template slot-scope="scope">
@@ -49,9 +96,10 @@
               type="danger"
               icon="el-icon-delete"
               size="mini"
-              circle
               @click="removeUserByName(scope.row.username)"
-            ></el-button>
+            >
+              delete user
+            </el-button>
             <!--
             <el-tooltip
               class="item"
@@ -82,38 +130,78 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="totle"
       ></el-pagination>-->
-    </el-card>
+      </el-card>
+    </el-container>
 
     <!-- 添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
       <!-- 内容主体 -->
       <el-form
-        :model="addUserForm"
         ref="addUserFormRef"
+        :model="addUserForm"
         :rules="addUserFormRules"
         label-width="100px"
       >
-        <el-form-item label="Username" prop="username">
-          <el-input v-model="addUserForm.username"></el-input>
+        <el-form-item
+          label="Username"
+          prop="username"
+        >
+          <el-input v-model="addUserForm.username" />
         </el-form-item>
-        <el-form-item label="Password" prop="password">
-          <el-input v-model="addUserForm.password"></el-input>
+        <el-form-item
+          label="Password"
+          prop="password"
+        >
+          <el-input v-model="addUserForm.password" />
         </el-form-item>
-        <el-form-item label="User Type" prop="usertype">
-         <el-radio v-model="radio" label=0>customer</el-radio>
-        <el-radio v-model="radio" label=1>merchant</el-radio>
-        <el-radio v-model="radio" label=2>manager</el-radio>
+        <el-form-item
+          label="User Type"
+          prop="usertype"
+        >
+          <el-radio
+            v-model="radio"
+            label="0"
+          >
+            customer
+          </el-radio>
+          <el-radio
+            v-model="radio"
+            label="1"
+          >
+            merchant
+          </el-radio>
+          <el-radio
+            v-model="radio"
+            label="2"
+          >
+            manager
+          </el-radio>
         </el-form-item>
-        <el-form-item label="Delivery Address" prop="address">
-          <el-input v-model="addUserForm.address"></el-input>
+        <el-form-item
+          label="Delivery Address"
+          prop="address"
+        >
+          <el-input v-model="addUserForm.address" />
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="addDialogVisible = false">cancel</el-button>
-        <el-button type="primary" @click="addUser">submit</el-button>
+        <el-button
+          type="primary"
+          @click="addUser"
+        >submit</el-button>
       </span>
     </el-dialog>
-  </div>
+    </div>
+  </el-container>
 </template>
 
 <script>
@@ -187,7 +275,7 @@ export default {
       this.$router.push('/login')
     },
     getUserList () {
-      const { data: res } = this.$http.get('user/allusers', {
+      const { data: res } = this.$http.get('user/allusers/', {
         params: this.queryInfo
       }).then(response => {
         console.log('userlist')
@@ -358,4 +446,23 @@ export default {
 </script>
 
 <style scoped>
+.home-container {
+    height: 100%;
+}
+
+.el-header {
+    background: #444356;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #dbdae4;
+    size: 20px;
+}
+
+.table0 {
+    position: absolute;
+    width: 70%;
+    top: 20%;
+    left: 15%;
+}
 </style>

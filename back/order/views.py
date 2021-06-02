@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from order.models import Order
+from product.models import Product
 from user.models import LoginUser
 from django.http import HttpResponseRedirect,HttpResponse,JsonResponse
 import json
+from django.db.models import Q
 
 # Create your views here.
 def create_order(request):
@@ -14,11 +16,18 @@ def create_order(request):
         req = json.loads(request.body)
         order.username = req['username']
         order.productName = req['productName']
+        order.productId = req['productId']
         order.totalprice = req['totalprice']
         order.inventory = req['inventory']
         order.merchantName = req['merchantName']
         order.status = 'Pending'
         order.address = LoginUser.objects.filter(username=order.username).first().address
+        order.toPhoneNumber = LoginUser.objects.filter(username=order.username).first().phoneNumber
+        order.fromAddress = LoginUser.objects.filter(username=order.merchantName).first().address
+        order.fromPhoneNumber = LoginUser.objects.filter(username=order.merchantName).first().phoneNumber
+        product = Product.objects.filter(id=order.productId).first()
+        print(product, order.productId)
+        order.profit = order.totalprice - order.inventory * product.basePrice
         try:
             order.save()
         except:
@@ -137,9 +146,9 @@ def get_customer_orders(request):
         data = {}
         req = json.loads(request.body)
         username = req['username']
-        users = Order.objects.filter(username=username).all().values()
+        users = Order.objects.filter(username=username).all().order_by('-time_created').values()
         data['dataArray'] = list(users)
-        print(data)
+        # print(data)
         return JsonResponse({
             'status' : 200,
             'data' : data
@@ -153,13 +162,87 @@ def get_merchant_orders(request):
         req = json.loads(request.body)
         username = req['merchantName']
         data = {}
-        users = Order.objects.filter(merchantName=username).all().values()
+        users = Order.objects.filter(merchantName=username).all().order_by('-time_created').values()
         data['dataArray'] = list(users)
-        print(data)
+        # print(data)
         return JsonResponse({
             'status' : 200,
             'data' : data
         }, safe=False)
 
+
+def drawStatistic(request):
+    '''
+    url： statistic/
+    该方法会在后端生成一张统计图片，并返回图片名称
+    cla 1 商品
+    cla 0 商家
+    '''
+    if request.method == "POST":
+        req = json.loads(request.body)
+        cla = req['class']
+        name = req['name']
+        import os
+        import datetime
+        from django.conf import settings  
+        import matplotlib.pyplot as plt
+        def get_nday_list(n):
+            before_n_days = []
+            for i in range(1, n + 1)[::-1]:
+                before_n_days.append(str(datetime.date.today() - datetime.timedelta(days=i)))
+            return before_n_days
+
+        #  params
+        date_length = 30
+        step = 5
+        if cla == 1:
+            filename = name + '_product.jpg'
+        if cla == 0:
+            filename = name + '_merchant.jpg'
+        filename = filename.replace(" ", 'c')
+        print("filename", filename)
+        filepath = os.path.join(settings.STATICFILES_DIRS[0],'statistic/' + filename)
+
+        #  check 
+        if os.path.exists(filepath) :
+            os.remove(filepath)
+
+        #  x, y data
+        date_list = get_nday_list(date_length)
+        # .filter(~Q(status!="Pending")).filter(~Q(status!="Canceled"))
+        if cla == 1:
+            p = Order.objects.filter(productName=name).filter(~Q(status="Pending")).filter(~Q(status="Canceled")).values()
+        elif cla == 0:
+            p = Order.objects.filter(merchantName=name).filter(~Q(status="Pending")).filter(~Q(status="Canceled")).values()
+        else:
+            return JsonResponse({
+                'status' : 500,
+                'msg' : 'false',
+            })
+        p = list(p)
+        order_list = [(str(i['time_created'].date()), i['inventory']) for i in p]
+        count_list = []
+        for i in date_list:
+            count = 0
+            for j in order_list:
+                if j[0] == i:
+                    count += j[1]
+            count_list.append(count)
+        # count_list = [order_list.count(i) for i in date_list]
+
+        #  draw and save pic
+        plt.figure(figsize=(9, 4), dpi=144)
+        plt.plot(date_list, count_list, '-')
+        plt.title(name)
+        plt.xlabel("Date [Year | Month | Day]")
+        plt.ylabel("sales")
+        plt.xticks(range(0,date_length,step))
+        # plt.show()
+        plt.savefig(filepath)
+        return JsonResponse({
+            'status' : 200,
+            'msg' : 'picture load complete',
+            'src' : filename
+        })
 
     

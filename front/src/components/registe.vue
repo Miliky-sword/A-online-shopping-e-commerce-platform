@@ -3,37 +3,67 @@
     <div class="login_box">
       <!-- 登录表单 -->
       <div class="title">
-          registe your account!
+        registe your account!
       </div>
-      <div>
+      <div class="res">
         <el-form
-        :model="addUserForm"
-        ref="addUserFormRef"
-        :rules="resFormRules"
-        label-width="100px"
-      >
-        <el-form-item label="Username" prop="username">
-          <el-input v-model="addUserForm.username"></el-input>
-        </el-form-item>
-        <el-form-item label="Password" prop="password">
-          <el-input v-model="addUserForm.password"></el-input>
-        </el-form-item>
-        <el-form-item label="User_Type" prop="usertype">
-         <el-radio v-model="radio" label=0>customer</el-radio>
-        <el-radio v-model="radio" label=1>merchant</el-radio>
-        <el-radio v-model="radio" label=2>manager</el-radio>
-        </el-form-item>
-        <el-form-item label="Address" prop="address">
-          <el-input v-model="addUserForm.address"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
+          ref="addUserFormRef"
+          :model="addUserForm"
+          :rules="resFormRules"
+          label-width="100px"
+        >
+          <el-form-item
+            label="Username"
+            prop="username"
+          >
+            <el-input v-model="addUserForm.username" />
+          </el-form-item>
+          <el-form-item
+            label="Password"
+            prop="password"
+          >
+            <el-input v-model="addUserForm.password" />
+          </el-form-item>
+          <el-form-item
+            label="User_Type"
+            prop="usertype"
+          >
+            <el-radio
+              v-model="radio"
+              label="0"
+            >
+              customer
+            </el-radio>
+            <el-radio
+              v-model="radio"
+              label="1"
+            >
+              merchant
+            </el-radio>
+          </el-form-item>
+          <el-form-item
+            label="Address"
+            prop="address"
+          >
+            <el-input v-model="addUserForm.address" />
+          </el-form-item>
+        </el-form>
+        <span
+          slot="footer"
+          class="dialog-footer"
+        >
           <div class="btns">
-        <el-button @click="resetResForm">reset this form</el-button>
-        <el-button type="primary" @click="addUser">submit</el-button>
-        <el-button type="primary" @click="logout">cancel</el-button>
+            <el-button @click="resetResForm">reset this form</el-button>
+            <el-button
+              type="primary"
+              @click="addUser"
+            >submit</el-button>
+            <el-button
+              type="primary"
+              @click="logout"
+            >cancel</el-button>
           </div>
-      </span>
+        </span>
       </div>
     </div>
   </div>
@@ -108,6 +138,11 @@ export default {
 
 <style scoped>
 .title {
+  position: absolute;
+  text-align: center;
+  left: 45%;
+  font: 22pt;
+  top: 15%;
   display: flex;
   justify-content: center;
 }
@@ -115,5 +150,12 @@ export default {
 .btns {
 display: flex;
   justify-content: center;
+}
+
+.res{
+  position: absolute;
+  width: 70%;
+  left: 15%;
+  top: 20%;
 }
 </style>

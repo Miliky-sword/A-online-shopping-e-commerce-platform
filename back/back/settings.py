@@ -27,7 +27,8 @@ SECRET_KEY = '3(tyndi=^n1beamf^s=xcbd#(o1=fd=n&b4os+uumdbo4gc4#6'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+# MEDIA_ROOT= os.path.join(BASE_DIR, 'media').replace("\\", "/")
+# MEDIA_URL = '/media/'
 
 # Application definition
 
@@ -45,7 +46,8 @@ INSTALLED_APPS = [
     'user',
     'product',
     'order',
-    'shoppingCart'
+    'shoppingCart',
+    'pic'
 ]
 
 MIDDLEWARE = [
@@ -64,7 +66,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 ROOT_URLCONF = 'back.urls'
-#STATIC_ROOT = os.path.join(BASE_DIR, "dist/")
+# STATIC_ROOT = os.path.join(BASE_DIR, "../front/dist/static/")
 
 TEMPLATES = [
     {
@@ -136,7 +138,7 @@ STATIC_URL = r'/static/'
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, r"../front/dist/static"),
+    os.path.join(BASE_DIR, r"../front/dist/static/"),
 ]
 
 TEMPLATE_DIRS = (

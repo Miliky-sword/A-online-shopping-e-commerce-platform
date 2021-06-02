@@ -1,54 +1,137 @@
 <template>
-    <el-container class="home-container">
-  <el-header class="header">
+  <el-container class="home-container">
+    <!-- 头部区域 -->
+    <el-header>
       <div>
-            <span>welcome to the e-commerce platform</span>
-        </div>
-        <el-button type="info" @click="logout">log out</el-button>
+        <span>Welcome to the online shopping e-commerce platform -- Merchant</span>
+      </div>
+      <el-button
+        type="info"
+        @click="logout"
+      >
+        log out
+      </el-button>
     </el-header>
-  <el-container class="main-container">
-          <el-header class="menu-aside" width="250px">
-          <el-menu class="menu" background-color="#333744" text-color="#fff" active-text-color="#66ccff" default-active="/merchantOrder" router mode="horizontal">
-            <el-menu-item index="/merchantManage">
-              <template slot="title">
-                <i class="el-icon-s-goods"></i>
-                <span>products on the shelves</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="/merchantOrder">
-              <template slot="title">
-                <i class="el-icon-s-order"></i>
-                <span>My order</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="5" disabled>
-              <template slot="title">
-                <i class="el-icon-user-solid"></i>
-                <span>User center</span>
-              </template>
-            </el-menu-item>
+    <!-- 页面主体区域 -->
+    <el-container>
+      <!-- 侧边栏 -->
+      <el-header
+        class="menu-aside"
+        width="250px"
+      >
+        <el-menu
+          class="menu"
+          background-color="#333744"
+          text-color="#fff"
+          active-text-color="#66ccff"
+          default-active="/merchantOrder"
+          router
+          mode="horizontal"
+        >
+          <el-menu-item
+            index="/merchantManage"
+            router
+          >
+            <template slot="title">
+              <i class="el-icon-s-goods" />
+              <span>products on the shelves</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/merchantOrder">
+            <template slot="title">
+              <i class="el-icon-s-order" />
+              <span>My order</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
+            index="/merchantStatistic"
+          >
+            <template slot="title">
+              <i class="el-icon-user-solid" />
+              <span>statistic the sales</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
+            index="/merchantuserinfo"
+          >
+            <template slot="title">
+              <i class="el-icon-user-solid" />
+              <span>User center</span>
+            </template>
+          </el-menu-item>
         </el-menu>
       </el-header>
-    <el-main class="main">
-        <el-table :data="this.orderTableData" border stripe>
-        <!-- stripe: 斑马条纹  border：边框-->
-        <el-table-column prop="id" label="id"></el-table-column>
-        <el-table-column prop="productName" label="productName"></el-table-column>
-        <el-table-column prop="totalprice" label="price"></el-table-column>
-        <el-table-column prop="address" label="address"></el-table-column>
-        <el-table-column prop="status" label="status"></el-table-column>
-        <el-table-column prop="inventory" label="inventory"></el-table-column>
-        <el-table-column label="operation">
-          <template slot-scope="scope" vertical>
+      <el-main class="main">
+        <el-table
+          :data="this.orderTableData"
+          border
+          stripe
+        >
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form
+                label-position="left"
+                inline
+                class="demo-table-expand"
+              >
+                <el-form-item label="product id:   ">
+                  <span>{{ props.row.productId }}</span>
+                </el-form-item>
+                <el-form-item label="profit:   ">
+                  <span>{{ props.row.profit }}</span>
+                </el-form-item>
+                <el-form-item label="from phone Number:  ">
+                  <span>{{ props.row.fromPhoneNumber }}</span>
+                </el-form-item>
+                <el-form-item label="from Address:  ">
+                  <span>{{ props.row.fromAddress }}</span>
+                </el-form-item>
+                <el-form-item label="to phone Number：  ">
+                  <span>{{ props.row.toPhoneNumber }}</span>
+                </el-form-item>
+                <el-form-item label="to Address:   ">
+                  <span>{{ props.row.address }}</span>
+                </el-form-item>
+              </el-form>
+            </template>
+          </el-table-column>
+          <!-- stripe: 斑马条纹  border：边框-->
+          <el-table-column
+            prop="id"
+            label="order uid"
+          />
+          <el-table-column
+            prop="productName"
+            label="productName"
+          />
+          <el-table-column
+            prop="totalprice"
+            label="total price"
+          />
+          <el-table-column
+            prop="status"
+            label="status"
+          />
+          <el-table-column
+            prop="inventory"
+            label="inventory"
+          />
+          <el-table-column label="operation">
+            <template
+              slot-scope="scope"
+              vertical
+            >
               <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              @click="deliverytheproduct(scope.row)"
-            >deliver the products</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="deliverytheproduct(scope.row)"
+              >
+                deliver the products
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-main>
     </el-container>
   </el-container>
@@ -79,7 +162,6 @@ export default {
       }).then(response => {
         console.log(response.data.data.dataArray)
         this.orderTableData = response.data.data.dataArray
-        this.$message.success('load products success！')
       }, response => {
         console.log('error')
         this.$message.error('failed to load products')
@@ -107,7 +189,17 @@ export default {
         this.$message.error(response.data.msg)
       })
     },
+    openmessage (str1, str2) {
+      this.$alert(str1, str2, {
+        confirmButtonText: 'ok',
+        callback: action => {}
+      })
+    },
     deliverytheproduct (row) {
+      if (row.status !== 'Payed') {
+        this.openmessage("You can't deliver the products! Please check the order status!", 'Sorry')
+        return
+      }
       this.$http.post('order/changeorderstatusdelivering/', {
         id: row.id
       }).then(response => {

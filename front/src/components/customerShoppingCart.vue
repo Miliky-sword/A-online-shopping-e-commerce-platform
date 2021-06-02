@@ -1,66 +1,116 @@
 <template>
-    <el-container class="home-container">
-  <el-header class="header">
+  <el-container class="home-container">
+    <el-header class="header">
       <div>
-            <span>welcome to the e-commerce platform</span>
-        </div>
-        <el-button type="info" @click="logout">log out</el-button>
+        <span>welcome to the e-commerce platform</span>
+      </div>
+      <el-button
+        type="info"
+        @click="logout"
+      >
+        log out
+      </el-button>
     </el-header>
-  <el-container class="main-container">
+    <el-container class="main-container">
       <el-header class="customer-menu">
-          <el-menu class="menu" background-color="#333744" text-color="#fff" active-text-color="#66ccff" default-active="/customerShoppingCart"
-          router  mode="horizontal">
-            <el-menu-item index="/goodList">
-              <template slot="title">
-                <i class="el-icon-s-goods"></i>
-                <span>browse all the products</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="2" disabled>
-              <template slot="title">
-                <i class="el-icon-s-goods"></i>
-                <span>serach products</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="/customerShoppingCart">
-              <template slot="title">
-                <i class="el-icon-shopping-cart-2"></i>
-                <span>shopping cart</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="/customerOrder">
-              <template slot="title">
-                <i class="el-icon-s-order"></i>
-                <span>My order</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="5" disabled>
-              <template slot="title">
-                <i class="el-icon-user-solid"></i>
-                <span>User center</span>
-              </template>
-            </el-menu-item>
+        <el-menu
+          class="menu"
+          background-color="#333744"
+          text-color="#fff"
+          active-text-color="#66ccff"
+          default-active="/customerShoppingCart"
+          router
+          mode="horizontal"
+        >
+          <el-menu-item index="/Home">
+            <template slot="title">
+              <i class="el-icon-s-goods" />
+              <span>Home Page</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
+            index="/customerSearch"
+          >
+            <template slot="title">
+              <i class="el-icon-s-goods" />
+              <span>serach products</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
+            index="/goodsinfo"
+          >
+            <template slot="title">
+              <i class="el-icon-s-goods" />
+              <span>product info</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/customerShoppingCart">
+            <template slot="title">
+              <i class="el-icon-shopping-cart-2" />
+              <span>shopping cart</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/customerOrder">
+            <template slot="title">
+              <i class="el-icon-s-order" />
+              <span>My order</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
+            index="customeruserinfo"
+          >
+            <template slot="title">
+              <i class="el-icon-user-solid" />
+              <span>User center</span>
+            </template>
+          </el-menu-item>
         </el-menu>
       </el-header>
-    <el-main class="main">
-        <el-table :data="this.cartTableData" border stripe>
-        <!-- stripe: 斑马条纹  border：边框-->
-        <el-table-column prop="productName" label="ProductName"></el-table-column>
-        <el-table-column prop="productName" label="productName"></el-table-column>
-        <el-table-column prop="price" label="price"></el-table-column>
-        <el-table-column prop="inventory" label="inventory"></el-table-column>
-        <el-table-column label="operation">
-          <template slot-scope="scope">
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              @click="delFromCart(scope.row)"
-            >del from cart</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-button type="info" @click="createallorder">submit</el-button>
+      <el-main class="main">
+        <el-table
+          :data="this.cartTableData"
+          border
+          stripe
+        >
+          <!-- stripe: 斑马条纹  border：边框-->
+          <el-table-column
+            prop="pid"
+            label="Product id"
+          />
+          <el-table-column
+            prop="productName"
+            label="productName"
+          />
+          <el-table-column
+            prop="price"
+            label="price"
+          />
+          <el-table-column
+            prop="inventory"
+            label="inventory"
+          />
+          <el-table-column label="operation">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="delFromCart(scope.row)"
+              >
+                del from cart
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="margin: 20px 0;" />
+        <div class="submitbutton">
+          <el-button
+            type="primary"
+            @click="createallorder"
+          >
+            create order for all products
+          </el-button>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -74,7 +124,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get.username === '') {
+    if (this.$session.get('username') === '') {
       return this.$router.push('/login')
     }
     this.loadAllinCart()
@@ -91,7 +141,6 @@ export default {
       }).then(response => {
         console.log(response.data.data.dataArray)
         this.cartTableData = response.data.data.dataArray
-        this.$message.success('load products success！')
       }, response => {
         console.log('error')
         this.$message.error('failed to load products')
@@ -111,12 +160,23 @@ export default {
         this.$message.error('failed to del products')
       })
     },
+    openmessage (str1, str2) {
+      this.$alert(str1, str2, {
+        confirmButtonText: 'ok',
+        callback: action => {}
+      })
+    },
     createallorder () {
       console.log(this.cartTableData)
+      if (this.cartTableData.length === 0) {
+        this.openmessage('There are no products in your cart!', '')
+        return
+      }
       this.cartTableData.forEach(element => {
         this.$http.post('order/createorder/', {
           username: element.username,
           productName: element.productName,
+          productId: element.pid,
           merchantName: element.merchantName,
           totalprice: element.price,
           inventory: element.inventory
@@ -155,6 +215,10 @@ export default {
 .menu-aside {
     background: #333744;
     height:100%
+}
+
+.submitbutton {
+  text-align: center;
 }
 
 .el-main {
