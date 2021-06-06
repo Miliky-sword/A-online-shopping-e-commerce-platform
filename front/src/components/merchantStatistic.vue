@@ -62,6 +62,36 @@
         </el-menu>
       </el-header>
       <el-main>
+        <div class="EchartPractice">
+          <div>
+            <el-row>
+              <el-col :span="12">
+                <el-button @click="drawChart(data1)">
+                  data1
+                </el-button>
+                <el-button @click="drawChart(data2)">
+                  data2
+                </el-button>
+                <el-button @click="drawChart(data3)">
+                  data3
+                </el-button>
+                <el-button @click="drawChart(data4)">
+                  data4
+                </el-button>
+              </el-col>
+              <el-col :span="12">
+                <el-date-picker
+                  v-model="days"
+                  type="daterange"
+                  range-separator="~"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                />
+              </el-col>
+            </el-row>
+          </div>
+          <echarts ref="tb" />
+        </div>
         <el-dropdown
           class="dropdown"
           @command="loadsrc"
@@ -94,18 +124,33 @@
 </template>
 
 <script>
+import echarts from '../components/self-components/echart.vue'
 export default {
+  name: 'EchartPractice',
+  components: {
+    echarts
+  },
   data () {
     return {
       src: '',
-      productList: []
+      productList: [],
+      days: ['2020-01-01', '2021-03-03'],
+      data1: [20, 30, 32, 11, 22, 20, 15, 25, 35, 14],
+      data2: [40, 10, 15, 21, 30, 20, 12, 15, 15, 31],
+      data3: [30, 35, 21, 12, 20, 25, 14, 35, 23, 13],
+      data4: [20, 23, 15, 31, 30, 30, 35, 22, 19, 24]
     }
+  },
+  mounted () {
+    // 因为要实现点击不能的数据渲染不同的列表，所以需要通过调用组件的ref去找组件里面的渲染方法，然后让网页去重新去渲染数据
+    this.$refs.tb.drawChart(this.data1)
   },
   created () {
     if (this.$session.get('username') === '') {
       return this.$router.push('/login')
     }
     this.loadAllProduct()
+    this.$refs.tb.drawChart(this.data1)
   },
   methods: {
     logout () {
@@ -122,6 +167,9 @@ export default {
       }, response => {
         console.log('error')
       })
+    },
+    drawChart (index) {
+      this.$refs.tb.drawChart(index)
     },
     loadsrc (command) {
       this.$http.post('order/statistic/', {

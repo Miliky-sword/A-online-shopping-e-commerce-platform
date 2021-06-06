@@ -71,7 +71,7 @@ ROOT_URLCONF = 'back.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, r'../front/dist/')],
+        'DIRS': [os.path.join(BASE_DIR, r"..", "front", "dist")],
         'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
@@ -138,9 +138,9 @@ STATIC_URL = r'/static/'
 
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, r"../front/dist/static/"),
+    os.path.join(BASE_DIR, r"..", "front", "dist", "static"),
 ]
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,r'../front/dist/'),
+    os.path.join(BASE_DIR,r"..", "front", "dist"),
 )
