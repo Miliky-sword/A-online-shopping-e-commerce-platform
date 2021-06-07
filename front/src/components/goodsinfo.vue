@@ -189,9 +189,10 @@ export default {
     }
   },
   created () {
-    if (this.$session.get('productId') !== undefined) {
-      this.pid = this.$session.get('productId')
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
+      return this.$router.push('/login')
     }
+    this.pid = this.$session.get('productId')
     this.loadproductdetail()
     this.loadcomment()
     this.loadpic()

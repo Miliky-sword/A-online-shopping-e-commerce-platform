@@ -12,6 +12,7 @@ import customerSearch from '../components/customerSearch.vue'
 import goodsinfo from '../components/goodsinfo.vue'
 import Home from '../components/Home.vue'
 import merchantStatistic from '../components/merchantStatistic.vue'
+import merchantStatisticProfit from '../components/merchantStatisticProfit.vue'
 import customeruserinfo from '../components/customeruserinfo.vue'
 import merchantuserinfo from '../components/merchantuserinfo.vue'
 import manageruserinfo from '../components/manageruserinfo.vue'
@@ -36,7 +37,8 @@ const routes = [
   { path: '/customeruserinfo', component: customeruserinfo },
   { path: '/merchantuserinfo', component: merchantuserinfo },
   { path: '/manageruserinfo', component: manageruserinfo },
-  { path: '/managerStatisticmer', component: managerStatisticmer }
+  { path: '/managerStatisticmer', component: managerStatisticmer },
+  { path: '/merchantStatisticProfit', component: merchantStatisticProfit }
 ]
 
 const router = new VueRouter({

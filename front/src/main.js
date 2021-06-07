@@ -6,7 +6,7 @@ import './plugins/element.js'
 import 'element-ui/lib/theme-chalk/index.css'
 
 // self components import
-import echarts from './components/self-components/echart.vue'
+import * as echarts from 'echarts'
 
 import axios from 'axios'
 
@@ -20,6 +20,7 @@ Vue.use(VueSession)
 Vue.use(ElementUI)
 
 Vue.prototype.$echarts = echarts
+Vue.config.productionTip = false
 
 new Vue({
   router,

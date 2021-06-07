@@ -24,6 +24,7 @@ def getProductInfo(request):
         req = json.loads(request.body)
         # print(req)
         id = req['pid']
+        print('id', 'id', id)
         data = {}
         products = Product.objects.filter(id=id).values()
         data['dataArray'] = list(products)

@@ -24,7 +24,7 @@
           background-color="#333744"
           text-color="#fff"
           active-text-color="#66ccff"
-          default-active="/merchantStatistic"
+          default-active="/merchantStatisticProfit"
           router
           mode="horizontal"
         >
@@ -75,14 +75,23 @@
             <div style="margin: 40px;" />
             <el-row>
               <el-col
+                :offset="8"
+                class="mainword"
+              >
+                You have maken {{ this.totalprofit }} in our platform !
+              </el-col>
+            </el-row>
+            <div style="margin: 20px 0;" />
+            <el-row>
+              <el-col
                 :span="6"
                 :offset="6"
               >
                 <el-select
                   v-model="value"
                   placeholder="Please select a product"
-                  @change="loadsalesdata()"
-                  @blur="loadsalesdata()"
+                  @change="loadprofitdata()"
+                  @blur="loadprofitdata()"
                 >
                   <el-option
                     v-for="item in options"
@@ -92,19 +101,30 @@
                   />
                 </el-select>
               </el-col>
-              <el-col :span="4">
-                <el-date-picker
-                  v-model="days"
-                  type="daterange"
-                  range-separator="~"
-                  start-placeholder="date start"
-                  end-placeholder="date end"
-                  @change="loadsalesdata()"
-                  @blur="loadsalesdata()"
+              <el-select
+                v-model="value2"
+                placeholder="Please select a product"
+                @change="loadprofitdata()"
+                @blur="loadprofitdata()"
+              >
+                <el-option
+                  v-for="item in options2"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
-              </el-col>
+              </el-select>
             </el-row>
           </div>
+          <div style="margin: 20px 0;" />
+          <el-row>
+            <el-col
+              :offset="8"
+              class="tip"
+            >
+              if you select YEARS in the second selector, what you select in the first selector will be unuseful
+            </el-col>
+          </el-row>
           <Echart
             ref="tb"
           />
@@ -124,13 +144,48 @@ export default {
   data () {
     return {
       src: '',
+      totalprofit: 0,
       productList: [],
-      days: ['2021-05-15', '2021-06-15'],
       valueY: [],
       labelX: [],
       interval: 0,
-      options: [],
-      value: 'all'
+      options: [{
+        item: '2016',
+        value: '2016'
+      }, {
+        item: '2017',
+        value: '2017'
+      }, {
+        item: '2018',
+        value: '2018'
+      }, {
+        item: '2019',
+        value: '2019'
+      }, {
+        item: '2020',
+        value: '2020'
+      }, {
+        item: '2021',
+        value: '2021'
+      }],
+      value: '2021',
+      options2: [{
+        item: 'days',
+        value: 'days'
+      },
+      {
+        item: 'weeks',
+        value: 'weeks'
+      },
+      {
+        item: 'months',
+        value: 'months'
+      },
+      {
+        item: 'years',
+        value: 'years'
+      }],
+      value2: 'weeks'
     }
   },
   mounted () {
@@ -142,8 +197,7 @@ export default {
     if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
       return this.$router.push('/login')
     }
-    this.loadAllProduct()
-    this.loadsalesdata()
+    this.loadprofitdata()
   },
   methods: {
     logout () {
@@ -152,10 +206,6 @@ export default {
       this.$router.push('/login')
     },
     loadAllProduct () {
-      this.options = [{
-        item: 'all',
-        value: 'all'
-      }]
       this.$http.post('product/getProduct/', {
         isAll: 0,
         merchantName: this.$session.get('username')
@@ -170,30 +220,21 @@ export default {
         console.log('error')
       })
     },
-    loadsalesdata () {
-      this.$http.post('order/loadSalesData/', {
-        value: this.value,
+    loadprofitdata () {
+      this.$http.post('order/loadProfitData/', {
         merchantName: this.$session.get('username'),
-        startdate: this.days[0],
-        enddate: this.days[1]
+        year: this.value,
+        groupby: this.value2
       }).then(response => {
         this.valueY = response.data.valueY
         this.labelX = response.data.labelX
         this.interval = response.data.interval
-        this.drawChart(this.valueY, this.labelX, this.interval, this.value + ' sales chart')
+        this.totalprofit = response.data.totalprofit
+        this.drawChart(this.valueY, this.labelX, this.interval)
       })
     },
     drawChart (valueY, labelX, interval) {
-      this.$refs.tb.drawChart(valueY, labelX, interval, this.value + ' sales chart')
-    },
-    loadsrc (command) {
-      this.$http.post('order/statistic/', {
-        class: 1,
-        name: command
-      }).then(response => {
-        this.src = 'http://127.0.0.1:8000/static/statistic/' + response.data.src
-        console.log(this.src)
-      })
+      this.$refs.tb.drawChart(valueY, labelX, interval, 'profit line cart')
     }
   }
 }
@@ -230,4 +271,12 @@ export default {
       left: 20%;
       top: 29%;
   }
+
+.tip {
+  color: gray;
+}
+
+.mainword {
+  font-size: 20pt;
+}
 </style>

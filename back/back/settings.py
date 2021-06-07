@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'product',
     'order',
     'shoppingCart',
-    'pic'
+    'pic',
+    'payment'
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,7 @@ STATICFILES_DIRS = [
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,r"..", "front", "dist"),
 )
+
+ALIPAY_PUBLIC = os.path.join(BASE_DIR,'keys','alipay_public.txt')
+APP_PUBLIC = os.path.join(BASE_DIR,'keys','app_public.txt')
+APP_PRIVATE = os.path.join(BASE_DIR,'keys','app_private.txt')

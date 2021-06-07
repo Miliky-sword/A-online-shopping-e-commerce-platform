@@ -236,11 +236,18 @@ export default {
       curproid: 0,
       curoid: -1,
       textarea1: '',
-      colors: ['#99A9BF', '#F7BA2A', '#FF9900']
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+      timer: undefined,
+      timercount: 0
     }
   },
+  beforeRouteLeave (to, from, next) {
+    next()
+    clearInterval(this.timer)
+    this.timer = undefined
+  },
   created () {
-    if (this.$session.get('username') === '') {
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
       return this.$router.push('/login')
     }
     this.loadAllofOrder()
@@ -273,9 +280,28 @@ export default {
         this.openmessage("Please check your order status! you can't pay for it!", 'Sorry')
         return
       }
-      this.$http.post('order/changeorderstatuspayed/', {
-        id: row.id
+      this.$http.post('pay/index/', {
+        id: row.id,
+        price: row.totalprice,
+        pname: row.productName
       }).then(response => {
+        window.open(response.data.url, '_blank')
+        console.log('page open')
+        // 先清空定时器
+        clearInterval(this.timer)
+        // 重新使用定时器
+        this.timer = setInterval(() => {
+          setTimeout(this.loadAllofOrder, 0)
+          // eslint会报xxx is defined but never used，加个console.log就好了
+          console.log(this.timer)
+          this.timercount += 1
+          if (this.timercount > 60) {
+            clearInterval(this.timer)
+            this.timer = undefined
+            this.timercount = 0
+          }
+          console.log(this.timercount)
+        }, 1000)
         this.$message.success(response.data.msg)
         this.loadAllofOrder()
       }, response => {

@@ -52,6 +52,14 @@
             </template>
           </el-menu-item>
           <el-menu-item
+            index="/merchantStatisticProfit"
+          >
+            <template slot="title">
+              <i class="el-icon-user-solid" />
+              <span>statistic the profit</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
             index="/merchantuserinfo"
           >
             <template slot="title">
@@ -236,7 +244,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get('username') === '') {
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
       return this.$router.push('/login')
     }
     this.loaduserInfo()

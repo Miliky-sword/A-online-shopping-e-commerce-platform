@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render
 from order.models import Order
 from product.models import Product
@@ -170,9 +171,129 @@ def get_merchant_orders(request):
             'data' : data
         }, safe=False)
 
+def loadSalesData(request):
+    '''
+    该方法返回两个列表
+    一个是销售量，一个是x轴label
+    url: loadSalesData
+    '''
+    import datetime
+    if request.method == "POST":
+        req = json.loads(request.body)
+        value = req['value']
+        startdatestr = req['startdate']
+        enddatestr = req['enddate']
+        merchant = req['merchantName']
+        sd = startdatestr.split('T')[0].split('-')
+        ed = enddatestr.split('T')[0].split('-')
+        startdate = date(int(sd[0]), int(sd[1]), int(sd[2]))
+        enddate = date(int(ed[0]), int(ed[1]), int(ed[2]))
+
+        if value == 'all' :
+            p = Order.objects.filter(merchantName=merchant).values()
+        else:
+            p = Order.objects.filter(merchantName=merchant).filter(productName=value).values()
+
+        if (enddate - datetime.date.today()).days > 0:
+            enddate = datetime.date.today()
+
+        range_days = []
+        for i in range(0, (enddate - startdate).days + 1):
+            range_days.append(str(startdate + datetime.timedelta(days=i)))
+
+        sales = [0 for i in range_days]
+        for i in p:
+            orderdate = i['time_created'].date()
+            if (enddate - orderdate).days > 0:
+                sales[(orderdate - startdate).days] += i['inventory']
+
+        interval = round(len(range_days) / 12)
+
+        return JsonResponse({
+            'status' : 200,
+            'labelX' : range_days,
+            'valueY' : sales,
+            'interval' : interval
+        })
+
+def loadProfitData(request):
+    '''
+    该方法返回两个列表
+    一个是销售量，一个是x轴label
+    url: loadProfitData
+    '''
+    import datetime
+    if request.method == "POST":
+        req = json.loads(request.body)
+        year = req['year']
+        year = int(year)
+        groupby = req['groupby']
+        merchant = req['merchantName']
+
+        totalprofit = 0
+
+        p = Order.objects.filter(merchantName=merchant).values()
+
+        startdate = datetime.date(int(year), 1, 1)
+        enddate = datetime.date(int(year), 12, 31)
+
+        range_days = []
+        # for i in range(0, (enddate - startdate).days + 1):
+        #     print((startdate + datetime.timedelta(days=i)).isocalendar()[1])
+
+        for i in p:
+            totalprofit += i['profit']
+
+
+        if groupby == 'days':
+            for i in range(0, (enddate - startdate).days + 1):
+                range_days.append(str(startdate + datetime.timedelta(days=i))[-5:])
+            profit = [0 for _ in range_days]
+            for i in p:
+                orderdate = i['time_created'].date()
+                if orderdate.year == year:
+                    profit[(orderdate - startdate).days] += float(i['profit'])
+            interval = 365 // 30
+        elif groupby == 'weeks':
+            if enddate.isocalendar()[1] == 1:
+                weekmax = 54
+            else:
+                weekmax = enddate.isocalendar()[1] + 1
+            for i in range(1, weekmax):
+                range_days.append(str(i))
+            profit = [0 for _ in range_days]
+            for i in p:
+                orderdate = i['time_created'].date()
+                if orderdate.year == year:
+                    profit[orderdate.isocalendar()[1]] += i['profit']
+            interval = 0
+        elif groupby == 'months':
+            for i in range(1, 13):
+                range_days.append(str(i))
+            profit = [0 for _ in range_days]
+            for i in p:
+                orderdate = i['time_created'].date()
+                if orderdate.year == year:
+                    profit[orderdate.month - 1] += i['profit']
+            interval = 0
+        elif groupby == 'years':
+            range_days = ['2016', '2017', '2018', '2019', '2020', '2021']
+            profit = [0 for _ in range_days]
+            profit[-1] = totalprofit
+            interval = 0
+        return JsonResponse({
+            'status' : 200,
+            'labelX' : range_days,
+            'valueY' : profit,
+            'interval' : interval,
+            'totalprofit' :totalprofit
+        })
+
+
 
 def drawStatistic(request):
     '''
+    disabled
     url： statistic/
     该方法会在后端生成一张统计图片，并返回图片名称
     cla 1 商品

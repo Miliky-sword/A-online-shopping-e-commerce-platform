@@ -52,6 +52,14 @@
             </template>
           </el-menu-item>
           <el-menu-item
+            index="/merchantStatisticProfit"
+          >
+            <template slot="title">
+              <i class="el-icon-user-solid" />
+              <span>statistic the profit</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item
             index="/merchantuserinfo"
           >
             <template slot="title">
@@ -68,6 +76,15 @@
           <img class="goods2" src="../assets/goods2.png" alt=""> -->
         <!-- 商品基础信息表单 -->
         <!-- 用户列表区域 -->
+        <div class="addproductbutton">
+          <el-button
+            type="info"
+            @click="addProductDialogVisible = true"
+          >
+            add Product
+          </el-button>
+          <div style="margin: 20px 0;" />
+        </div>
         <el-table
           :data="this.productTableData"
           border
@@ -138,15 +155,6 @@
           </el-table-column>
         </el-table>
       </el-main>
-      <div style="margin: 20px 0;" />
-      <div class="addproductbutton">
-        <el-button
-          type="primary"
-          @click="addProductDialogVisible = true"
-        >
-          add Product
-        </el-button>
-      </div>
     </el-container>
 
     <!-- 添加商品的对话框 -->
@@ -363,7 +371,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get('username') === '') {
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
       return this.$router.push('/login')
     }
     this.loadAllProduct()
@@ -461,6 +469,11 @@ export default {
         this.editProductDialogVisible = false
         if (response.data.status === 200) {
           this.openmessage(response.data.msg)
+          this.editProductForm.price = ''
+          this.editProductForm.inventory = ''
+          this.editProductForm.cost = ''
+          this.editProductForm.date = ''
+          this.editProductForm.desc = ''
         } else {
           this.openmessage(response.data.msg, 'Sorry')
         }

@@ -54,31 +54,44 @@
         </el-menu>
       </el-header>
       <el-main>
-        <el-dropdown
-          class="dropdown"
-          @command="loadsrc"
-        >
-          <el-button type="primary">
-            select a product to show its sales in 30 days<i class="el-icon-arrow-down el-icon--right" />
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="item in productList"
-              :key="item.username"
-              :command="item.username"
-            >
-              {{ item.username }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <div class="demo-image__placeholder">
-          <div class="block">
-            <span class="demonstration" />
-            <el-image
-              style="width: 900px; height: 400px"
-              :src="src"
-            />
+        <div class="EchartPractice">
+          <div>
+            <div style="margin: 40px;" />
+            <el-row>
+              <el-col
+                :span="6"
+                :offset="6"
+              >
+                <el-select
+                  v-model="value"
+                  placeholder="Please select a product"
+                  @change="loadsalesdata()"
+                  @blur="loadsalesdata()"
+                >
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="4">
+                <el-date-picker
+                  v-model="days"
+                  type="daterange"
+                  range-separator="~"
+                  start-placeholder="date start"
+                  end-placeholder="date end"
+                  @change="loadsalesdata()"
+                  @blur="loadsalesdata()"
+                />
+              </el-col>
+            </el-row>
           </div>
+          <Echart
+            ref="tb"
+          />
         </div>
       </el-main>
     </el-container>
@@ -86,18 +99,30 @@
 </template>
 
 <script>
+import Echart from './self-components/echart.vue'
 export default {
+  name: 'EchartPractice',
+  components: {
+    Echart
+  },
   data () {
     return {
       src: '',
-      productList: []
+      productList: [],
+      days: ['2021-05-15', '2021-06-15'],
+      valueY: [],
+      labelX: [],
+      interval: 0,
+      options: [],
+      value: 'merchant'
     }
   },
   created () {
-    if (this.$session.get('username') === '') {
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
       return this.$router.push('/login')
     }
     this.loadAllMerchant()
+    this.loadsalesdata()
   },
   methods: {
     logout () {
@@ -107,19 +132,31 @@ export default {
     },
     loadAllMerchant () {
       this.$http.post('user/getMerchant/', {}).then(response => {
-        this.productList = response.data.data.dataArray
+        response.data.data.dataArray.forEach(element => {
+          this.options.push({
+            item: element.username,
+            value: element.username
+          })
+        })
       }, response => {
         console.log('error')
       })
     },
-    loadsrc (command) {
-      this.$http.post('order/statistic/', {
-        class: 0,
-        name: command
+    loadsalesdata () {
+      this.$http.post('order/loadSalesData/', {
+        value: 'all',
+        merchantName: this.value,
+        startdate: this.days[0],
+        enddate: this.days[1]
       }).then(response => {
-        this.src = 'http://127.0.0.1:8000/static/statistic/' + response.data.src
-        console.log(this.src)
+        this.valueY = response.data.valueY
+        this.labelX = response.data.labelX
+        this.interval = response.data.interval
+        this.drawChart(this.valueY, this.labelX, this.interval, this.value + ' sales chart')
       })
+    },
+    drawChart (valueY, labelX, interval) {
+      this.$refs.tb.drawChart(valueY, labelX, interval, this.value + ' sales chart')
     }
   }
 }

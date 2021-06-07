@@ -54,6 +54,20 @@
         </el-menu>
       </el-header>
       <!-- 用户列表区域 -->
+      <div style="margin: 20px 0;" />
+      <div>
+        <el-row>
+          <el-col :offset="11">
+            <el-button
+              type="primary"
+              @click="addDialogVisible=true"
+            >
+              add a user
+            </el-button>
+          </el-col>
+        </el-row>
+      </div>
+      <div style="margin: 20px 0;" />
       <el-table
         :data="this.userlist"
         border
@@ -135,7 +149,7 @@
 
     <!-- 添加用户的对话框 -->
     <el-dialog
-      title="添加用户"
+      title="add user"
       :visible.sync="addDialogVisible"
       width="50%"
       @close="addDialogClosed"
@@ -263,8 +277,8 @@ export default {
     }
   },
   created () {
-    if (this.$session.get('username') === '') {
-      this.$router.push('/login')
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
+      return this.$router.push('/login')
     }
     this.getUserList()
   },
@@ -460,7 +474,6 @@ export default {
 }
 
 .table0 {
-    position: absolute;
     width: 70%;
     top: 20%;
     left: 15%;

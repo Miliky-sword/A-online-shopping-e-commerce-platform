@@ -71,7 +71,7 @@
         <el-carousel
           :interval="4000"
           type="card"
-          height="200px"
+          height="400px"
         >
           <el-carousel-item
             v-for="item in imgArrag"
@@ -80,7 +80,6 @@
             <el-image
               class="image"
               :src="item"
-              :fit="scale-down"
             />
           </el-carousel-item>
         </el-carousel>
@@ -149,8 +148,8 @@ export default {
     }
   },
   created () {
-    if (this.$session.get('username') === '') {
-      this.$router.push('/login')
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
+      return this.$router.push('/login')
     }
   },
   methods: {
@@ -181,6 +180,7 @@ export default {
 
 <style scoped>
 .el-carousel__item h3 {
+    text-align: center;
     color: #475669;
     font-size: 14px;
     opacity: 0.75;
@@ -195,24 +195,24 @@ export default {
 .block {
   position: absolute;
   left: 5%;
-  top: 45%;
+  top: 65%;
   width: 400px;
-  height: 200px;
+  height: 400px;
 }
 
 .block1 {
   position: absolute;
   left: 35%;
-  top: 45%;
+  top: 65%;
   text-align: center;
-  width: 350px;
-  height: 350px;
+  width: 300px;
+  height: 300px;
 }
 
 .block2 {
   position: absolute;
   left: 67%;
-  top: 45%;
+  top: 65%;
   text-align: center;
   width: 300px;
   height: 300px;
@@ -221,24 +221,24 @@ export default {
 .block3 {
   position: absolute;
   left: 35%;
-  top: 85%;
+  top: 105%;
   text-align: center;
-  width: 250px;
-  height: 250px;
+  width: 300px;
+  height: 300px;
 }
 
 .block4 {
   position: absolute;
   left: 67%;
-  top: 85%;
+  top: 105%;
   text-align: center;
   width: 300px;
   height: 300px;
 }
 
 .image {
-  height: 200px;
-  width: 750px;
+  height: 400px;
+  width: 900px;
   flex: auto;
   text-align: center;
 }

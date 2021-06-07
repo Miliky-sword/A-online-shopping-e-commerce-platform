@@ -209,7 +209,7 @@ export default {
     }
   },
   created () {
-    if (this.$session.get('username') === '') {
+    if (this.$session.get('username') === '' || this.$session.get('username') === null || this.$session.get('username') === undefined) {
       return this.$router.push('/login')
     }
     this.loadSearchProduct('')

@@ -11,20 +11,23 @@ export default {
     }
   },
   methods: {
-    drawChart (data) {
+    drawChart (valueY, labelX, interval = 0, title = 'line chart') {
+      this.$echarts.dispose(document.getElementById('main'))
       const myEchart = this.$echarts.init(document.getElementById('main'))
       const option = {
         title: {
-          text: '折线图'
+          text: title
         },
         tooltip: {
           trigger: 'item', // 触发类型；轴触发，axis则鼠标hover到一条柱状图显示全部数据，item则鼠标hover到折线点显示相应数据，
           formatter: function (params) {
-            return '当前温度为：' + params.data
+            return params.data
           }
         },
         xAxis: {
-          type: 'category'
+          type: 'category',
+          data: labelX,
+          axisLabel: { interval: interval }
         },
         yAxis: {
           type: 'value',
@@ -36,12 +39,13 @@ export default {
           }
         },
         series: [{
-          data: data,
+          data: valueY,
           type: 'line',
           smooth: true,
           lineStyle: {
-            color: 'blue'
-          }
+            color: 'black'
+          },
+          itemStyle: { normal: { label: { show: true } } }
         }]
       }
       myEchart.setOption(option)
@@ -53,9 +57,9 @@ export default {
 
 <style scoped>
 #main {
-  width: 600px;
-  height: 400px;
+  width: 1400px;
+  height: 600px;
   margin: auto;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 </style>
