@@ -82,7 +82,7 @@
                   <div>
                     <el-form-item label-position="top">
                       <el-image
-                        :src="props.row.imageUrl"
+                        :src="props.row.imageUrl[0]"
                         style="width: 100px; height: 100px"
                       />
                     </el-form-item>
@@ -151,7 +151,8 @@ export default {
   data () {
     return {
       tableData: [],
-      s: ''
+      s: '',
+      imgArrag: []
     }
   },
   created () {
@@ -166,16 +167,31 @@ export default {
       this.$session.set('userType', '')
       this.$router.push('/login')
     },
+    loadpic (pid) {
+      this.$http.post('product/loadPic/', {
+        pid: pid
+      }).then(response => {
+        console.log('pic imagarrag')
+        console.log(response.data.data.dataArray)
+        this.imgArrag = response.data.data.dataArray
+        this.imgArrag.forEach(element => {
+          this.s = ''
+          this.s = element.path
+          element.path = 'http://47.108.209.135:8080/static/media/' + this.s
+        })
+      })
+      console.log(this.imgArrag)
+      console.log('333')
+    },
     loadAllProduct () {
       this.$http.get('product/getAvailableProduct/').then(response => {
-        console.log(response.data.data.dataArray)
         this.tableData = response.data.data.dataArray
         this.tableData.forEach(element => {
-          this.s = ''
-          this.s = element.imageUrl
-          element.imageUrl = 'http://127.0.0.1:8000/static/media/' + this.s
+          this.loadpic(element.id)
+          element.imageUrl = this.imgArrag
         })
         this.$message.success('load products success！')
+        console.log(this.tableData)
       }, response => {
         console.log('error')
         this.$message.error('failed to load products')

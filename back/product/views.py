@@ -389,11 +389,36 @@ def loadPic(request):
                 'msg' : 'load pictures failed'
             })
         data = {}
-        data['dataArray'] = list(p)
+        if len(p) > 0:
+            data['id'] = p[0]['id']
+            data['productId']  = p[0]['productId']
+            a = []
+            for i in p:
+                a.append(i['path'])
+            data['dataArray'] = a
         return JsonResponse({
             'status' : 200,
             'msg' : 'load pictures done',
             'data' : data
+        })
+
+def delpic(request):
+    if request.method == "POST":
+        req = json.loads(request.body)
+        pid = req['pid']
+        path = req['path']
+        print("pid", pid)
+        try:
+            p = Pic.objects.filter(productId=pid, path=path).delete()
+            print('p',111,  p)
+        except:
+            return JsonResponse({
+                'status' : 500,
+                'msg' : 'delete pictures failed'
+            })
+        return JsonResponse({
+            'status' : 200,
+            'msg' : 'delete pictures done'
         })
 
 

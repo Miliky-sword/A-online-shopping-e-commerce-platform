@@ -137,14 +137,14 @@
 export default {
   data () {
     return {
-      imgArrag: ['http://127.0.0.1:8000/static/img/AFDASUIFYIUSH.png',
-        'http://127.0.0.1:8000/static/img/DJFHIAJSDFHAI.png',
-        'http://127.0.0.1:8000/static/img/JKSGFIDSGF.png'],
-      src: 'http://127.0.0.1:8000/static/img/5U5A8PZRU3MG74U39.png',
-      src1: 'http://127.0.0.1:8000/static/img/332D411812F39C814643202395D9DA54.png',
-      src2: 'http://127.0.0.1:8000/static/img/06653B43885010CB4CF9480C9F39D182.png',
-      src3: 'http://127.0.0.1:8000/static/img/B3974829BCAA82437F442560A83A1C9A.png',
-      src4: 'http://127.0.0.1:8000/static/img/339CD628D63E4778456A80B7DECBC2DF.png'
+      imgArrag: ['http://47.108.209.135:8080/static/img/AFDASUIFYIUSH.png',
+        'http://47.108.209.135:8080/static/img/DJFHIAJSDFHAI.png',
+        'http://47.108.209.135:8080/static/img/JKSGFIDSGF.png'],
+      src: 'http://47.108.209.135:8080/static/img/5U5A8PZRU3MG74U39.png',
+      src1: 'http://47.108.209.135:8080/static/img/332D411812F39C814643202395D9DA54.png',
+      src2: 'http://47.108.209.135:8080/static/img/06653B43885010CB4CF9480C9F39D182.png',
+      src3: 'http://47.108.209.135:8080/static/img/B3974829BCAA82437F442560A83A1C9A.png',
+      src4: 'http://47.108.209.135:8080/static/img/339CD628D63E4778456A80B7DECBC2DF.png'
     }
   },
   created () {

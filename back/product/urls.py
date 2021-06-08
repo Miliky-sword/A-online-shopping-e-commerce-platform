@@ -14,5 +14,6 @@ urlpatterns = [
     path(r'getProductInfo/', getProductInfo),
     path(r'loadcomment/', GetAllComments),
     path(r'loadPic/', loadPic),
+    path(r'delpic/', delpic),
     path(r'editproinfo/', editproductinfo)
 ]

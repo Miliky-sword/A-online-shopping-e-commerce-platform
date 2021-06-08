@@ -11,6 +11,7 @@ from Crypto.Hash import SHA256
 from urllib.parse import quote_plus
 from base64 import decodebytes, encodebytes
 import json
+import requests
 
 
 class AliPay(object):
@@ -48,6 +49,19 @@ class AliPay(object):
         biz_content.update(kwargs)
         data = self.build_body("alipay.trade.page.pay", biz_content, self.return_url)
         return self.sign_data(data)
+
+    def api_alipay_trade_refund(self, refund_amount, out_trade_no=None, trade_no=None, **kwargs):
+            biz_content = {
+                "refund_amount": refund_amount
+            }
+            biz_content.update(**kwargs)
+            if out_trade_no:
+                biz_content["out_trade_no"] = out_trade_no
+            if trade_no:
+                biz_content["trade_no"] = trade_no
+            data = self.build_body("alipay.trade.refund", biz_content, self.return_url)
+            url = self.sign_data(data)
+            return url
 
     def build_body(self, method, biz_content, return_url=None):
         data = {

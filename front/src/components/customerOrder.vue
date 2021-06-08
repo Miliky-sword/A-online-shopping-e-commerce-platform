@@ -332,13 +332,13 @@ export default {
         this.openmessage("Please check your order status! you can't cancel this order!", 'Sorry')
         return
       }
-      this.$http.post('order/changeorderstatuscanceled/', {
+      this.$http.post('order/changeorderstatuscanceling/', {
         id: row.id
       }).then(response => {
         this.loadAllofOrder()
         if (response.data.status === 200) {
           this.$message.success(response.data.msg)
-          this.openmessage('You have canceled this order! Your money will be refunded within three days.', 'OK')
+          this.openmessage('You are canceling this order! Your money will be refunded later.', 'OK')
         }
       }, response => {
         console.log('error')

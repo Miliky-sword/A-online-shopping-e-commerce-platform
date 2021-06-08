@@ -55,7 +55,7 @@
     </div>
     <img
       class="img_class"
-      src="http://127.0.0.1:8000/static/img/1.png"
+      src="http://47.108.209.135:8080/static/img/1.png"
     >
   </div>
 </template>

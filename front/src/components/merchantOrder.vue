@@ -137,6 +137,14 @@
               >
                 deliver the products
               </el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="cancelorder(scope.row)"
+              >
+                refund the money
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -149,7 +157,9 @@
 export default {
   data () {
     return {
-      orderTableData: []
+      orderTableData: [],
+      timercount: 0,
+      timer: undefined
     }
   },
   created () {
@@ -190,6 +200,60 @@ export default {
       this.$http.post('order/changeorderstatusdelivered/', {
         id: row.id
       }).then(response => {
+        this.$message.success(response.data.msg)
+        this.loadAllofOrder()
+      }, response => {
+        console.log('error')
+        this.$message.error(response.data.msg)
+      })
+    },
+    canceledorder (row) {
+      this.$http.post('order/changeorderstatuscanceled/', {
+        id: row.id
+      }).then(response => {
+        this.loadAllofOrder()
+      }, response => {
+        console.log('error')
+        this.$message.error(response.data.msg)
+      })
+    },
+    cancelorder (row) {
+      if (row.status !== 'Canceling') {
+        this.openmessage("Please check your order status! you can't pay for it!", 'Sorry')
+        return
+      }
+      this.$http.post('pay/refund/', {
+        id: row.id,
+        price: row.totalprice,
+        pname: row.productName
+      }).then(response => {
+        this.$http.defaults.url = undefined
+        this.$http.get(response.data.url).then(response => {
+          console.log(response.data.alipay_trade_refund_response)
+          if (response.data.alipay_trade_refund_response.msg === 'Success') {
+            this.canceledorder(row)
+            this.openmessage('The money is refunded!', 'OK')
+          } else {
+            this.openmessage('Please try again!', 'Sorry')
+          }
+        })
+        this.$http.defaults.url = 'http://47.108.209.135:8080/'
+        console.log('page open')
+        // 先清空定时器
+        clearInterval(this.timer)
+        // 重新使用定时器
+        this.timer = setInterval(() => {
+          setTimeout(this.loadAllofOrder, 0)
+          // eslint会报xxx is defined but never used，加个console.log就好了
+          console.log(this.timer)
+          this.timercount += 1
+          if (this.timercount > 60) {
+            clearInterval(this.timer)
+            this.timer = undefined
+            this.timercount = 0
+          }
+          console.log(this.timercount)
+        }, 1000)
         this.$message.success(response.data.msg)
         this.loadAllofOrder()
       }, response => {

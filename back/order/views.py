@@ -118,6 +118,27 @@ def change_order_status_delivered(request):
             'msg'    : 'change success'
         })
 
+def change_order_status_canceling(request):
+    '''
+    更改订单状态为取消
+    '''
+    if request.method == "POST":
+        req = json.loads(request.body)
+        id = req['id']
+        order = Order.objects.filter(id = id).first()
+        order = Order.objects.filter(id = id)
+        try:
+            order.update(status = 'Canceling')
+        except:
+            return JsonResponse({
+                'status' : 500,
+                'msg'    : 'change failed'
+            })
+        return JsonResponse({
+            'status' : 200,
+            'msg'    : 'change success'
+        })
+
 def change_order_status_canceled(request):
     '''
     更改订单状态为取消

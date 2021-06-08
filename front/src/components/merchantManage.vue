@@ -228,7 +228,7 @@
       <el-upload
         class="upload-demo"
         drag
-        action="http://127.0.0.1:8000/product/post/"
+        action="http://47.108.209.135:8080/product/post/"
         :data="{productId:this.curruntid}"
         multiple
       >
@@ -296,6 +296,30 @@
         >
           <el-input v-model="editProductForm.desc" />
         </el-form-item>
+        <el-form-item>
+          <el-table
+            :data="this.pictableData"
+            border
+            stripe
+          >
+            <el-table-column
+              label="pic name"
+              prop="path"
+            />
+            <el-table-column label="operation">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  @click="delpic(scope.row)"
+                >
+                  delete
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
       </el-form>
       <span
         slot="footer"
@@ -334,6 +358,8 @@ export default {
         desc: '',
         cost: ''
       },
+      piclist: [],
+      pictableData: [],
       glusername: this.$session.get('username'),
 
       addProductFormRules: {
@@ -391,6 +417,21 @@ export default {
         this.productTableData = response.data.data.dataArray
       }, response => {
         console.log('error')
+      })
+    },
+    loadpic (pid) {
+      this.pictableData = []
+      this.$http.post('product/loadPic/', {
+        pid: pid
+      }).then(response => {
+        console.log('pic imagarrag')
+        console.log(response.data.data.dataArray)
+        this.piclist = response.data.data.dataArray
+        this.piclist.forEach(element => {
+          this.pictableData.push({
+            path: element
+          })
+        })
       })
     },
     addProduct () {
@@ -453,9 +494,23 @@ export default {
       console.log(this.curruntid)
       this.picdialogVisible = true
     },
+    delpic (row) {
+      console.log(row.path, this.curruntid)
+      this.$http.post('product/delpic/', {
+        pid: this.curruntid,
+        path: row.path
+      }).then(response => {
+        if (response.data.status === 200) {
+          this.openmessage(response.data.msg, 'OK')
+        } else {
+          this.openmessage(response.data.msg, 'Sorry')
+        }
+      })
+    },
     editproduct (row) {
       this.curruntid = row.id
       this.editProductDialogVisible = true
+      this.loadpic(row.id)
     },
     editProductInfo () {
       this.$http.post('product/editproinfo/', {

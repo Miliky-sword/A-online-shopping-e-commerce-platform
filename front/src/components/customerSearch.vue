@@ -129,7 +129,9 @@
                   <div>
                     <el-form-item label-position="top">
                       <el-image
-                        :src="props.row.imageUrl"
+                        v-for="url in props.row.imageUrl"
+                        :key="url"
+                        :src="url"
                         style="width: 100px; height: 100px"
                       />
                     </el-form-item>
@@ -204,8 +206,10 @@ export default {
   data () {
     return {
       tableData: [],
-      s: '',
-      input: ''
+      s: 'http://47.108.209.135:8080/static/media/',
+      input: '',
+      imgArrag: [],
+      piclist: []
     }
   },
   created () {
@@ -220,19 +224,35 @@ export default {
       this.$session.set('userType', '')
       this.$router.push('/login')
     },
-    loadSearchProduct (str) {
-      this.$http.post('product/search/', {
+    async loadpic (pid) {
+      await this.$http.post('product/loadPic/', {
+        pid: pid
+      }).then(response => {
+        console.log('pic imagarrag')
+        console.log(response.data.data.dataArray)
+        this.imgArrag = response.data.data.dataArray
+        this.piclist = []
+        for (var i = 0; i < response.data.data.dataArray.length; i++) {
+          this.piclist.push(this.s + response.data.data.dataArray[i])
+        }
+      })
+      console.log(this.imgArrag)
+      console.log('333')
+      return { pl: this.piclist }
+    },
+    async loadSearchProduct (str) {
+      await this.$http.post('product/search/', {
         keyword: this.input,
         order: str
       }).then(response => {
         console.log(this.input)
-        console.log(response.data.data.dataArray)
         this.tableData = response.data.data.dataArray
         this.tableData.forEach(element => {
-          this.s = ''
-          this.s = element.imageUrl
-          element.imageUrl = 'http://127.0.0.1:8000/static/media/' + this.s
+          this.loadpic(element.id).then(res => {
+            element.imageUrl = res.pl
+          })
         })
+        console.log(this.tableData)
       }, response => {
         console.log('error')
         this.$message.error('failed to load products')

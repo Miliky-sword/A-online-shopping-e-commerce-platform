@@ -11,7 +11,7 @@ import * as echarts from 'echarts'
 import axios from 'axios'
 
 import VueSession from 'vue-session'
-axios.defaults.baseURL = 'http://127.0.0.1:8000/'
+axios.defaults.baseURL = 'http://47.108.209.135:8080/'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios

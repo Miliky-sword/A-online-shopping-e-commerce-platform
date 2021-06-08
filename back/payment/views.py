@@ -9,13 +9,14 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from payment.alipay import AliPay
 import json
+from order.models import Order
 
 
 def aliPay():
     obj = AliPay(
         appid="2021000117671190",                                # 支付宝沙箱里面的APPID，需要改成你自己的
-        app_notify_url="http://127.0.0.1:8000/pay/update_order/",    # 如果支付成功，支付宝会向这个地址发送POST请求（校验是否支付已经完成），此地址要能够在公网进行访问，需要改成你自己的服务器地址
-        return_url="http://127.0.0.1:8000/pay/result/",              # 如果支付成功，重定向回到你的网站的地址。需要你自己改，这里是我的服务器地址
+        app_notify_url="http://47.108.209.135:8080/pay/update_order/",    # 如果支付成功，支付宝会向这个地址发送POST请求（校验是否支付已经完成），此地址要能够在公网进行访问，需要改成你自己的服务器地址
+        return_url="http://47.108.209.135:8080/pay/result/",              # 如果支付成功，重定向回到你的网站的地址。需要你自己改，这里是我的服务器地址
         alipay_public_key_path=settings.ALIPAY_PUBLIC,           # 支付宝公钥
         app_private_key_path=settings.APP_PRIVATE,               # 应用私钥
 
@@ -63,6 +64,37 @@ def index(request):
             'url' : pay_url
         })
 
+@csrf_exempt
+def refund(request):
+    if request.method == "POST":
+        req = json.loads(request.body)
+        # 实例化SDK里面的类AliPay
+        alipay = aliPay()
+
+        # 对购买的数据进行加密
+        money = float(req['price'])  # 保留俩位小数  前端传回的数据
+        oid = req['id']
+        id = oid
+        oid = str(oid)
+        pname = req['pname']
+        order = Order.objects.filter(id = id).fisrt().values()
+        out_trade_no = order['ooid']
+        print("refund ooid", out_trade_no)
+
+        # 1. 在数据库创建一条数据：状态（待支付）
+
+        query_params = alipay.api_alipay_trade_refund(
+            subject=pname,  # 商品简单描述 这里一般是从前端传过来的数据
+            out_trade_no=out_trade_no,  # 商户订单号  这里一般是从前端传过来的数据
+            total_amount=money,  # 交易金额(单位: 元 保留俩位小数)   这里一般是从前端传过来的数据
+        )
+        # 拼接url，转到支付宝支付页面
+        pay_url = "https://openapi.alipaydev.com/gateway.do?{}".format(query_params)
+
+        return JsonResponse({
+            'status' : 302,
+            'url' : pay_url
+        })
 
 @csrf_exempt
 def update_order(request):
@@ -71,7 +103,6 @@ def update_order(request):
     :param request:
     :return:
     """
-    from order.models import Order
     if request.method == 'POST':
         body_str = request.body.decode('utf-8')
         post_data = parse_qs(body_str)
@@ -84,31 +115,64 @@ def update_order(request):
 
         sign = post_dict.pop('sign', None)
         status = alipay.verify(post_dict, sign)
-        if status:
-            # 1.修改订单状态
-            out_trade_no = post_dict.get('out_trade_no')
-            oid = out_trade_no.split('ooo')[1]
-            print("return oid   ", oid)
-            order = Order.objects.filter(id = id).first()
-            if order.status != 'Pending':
+        typetrade = post_dict.get('notify_type')
+        if typetrade == 'trade_status_sync':
+            if status:
+                # 1.修改订单状态
+                out_trade_no = post_dict.get('out_trade_no')
+                oid = out_trade_no.split('ooo')[1]
+                print("return oid   ", oid)
+                id = int(oid)
+                order = Order.objects.filter(id = id).first()
+                if order.status != 'Pending':
+                    return JsonResponse({
+                        'status' : 501,
+                        'msg'    : 'You have payed the order!'
+                    })
+                #　将支付宝的id存起来
+                order = Order.objects.filter(id = id)
+                try:
+                    order.update(status = 'Payed')
+                    order.update(ooid = out_trade_no)
+                except:
+                    return JsonResponse({
+                        'status' : 500,
+                        'msg'    : 'change failed'
+                    })
                 return JsonResponse({
-                    'status' : 501,
-                    'msg'    : 'You have payed the order!'
+                    'status' : 200,
+                    'msg'    : 'change success'
                 })
-            order = Order.objects.filter(id = id)
-            try:
-                order.update(status = 'Payed')
-            except:
+            else:
+                return HttpResponse('支付失败')
+        elif typetrade == 'batch_refund_notify':
+            if status:
+                # 1.修改订单状态
+                out_trade_no = post_dict.get('out_trade_no')
+                oid = out_trade_no.split('ooo')[1]
+                print("return oid   ", oid)
+                id = int(oid)
+                order = Order.objects.filter(id = id).first()
+                if order.status != 'Canceling':
+                    return JsonResponse({
+                        'status' : 501,
+                        'msg'    : 'You have canceled the order!'
+                    })
+                #　将支付宝的id存起来
+                order = Order.objects.filter(id = id)
+                try:
+                    order.update(status = 'Canceling')
+                except:
+                    return JsonResponse({
+                        'status' : 500,
+                        'msg'    : 'change failed'
+                    })
                 return JsonResponse({
-                    'status' : 500,
-                    'msg'    : 'change failed'
+                    'status' : 200,
+                    'msg'    : 'change success'
                 })
-            return JsonResponse({
-                'status' : 200,
-                'msg'    : 'change success'
-            })
-        else:
-            return HttpResponse('支付失败')
+            else:
+                return HttpResponse('支付失败')
     return HttpResponse('')
 
 
@@ -127,5 +191,5 @@ def pay_result(request):
     status = alipay.verify(params, sign)
 
     if status:
-        return HttpResponse('支付成功')
-    return HttpResponse('支付失败')
+        return HttpResponse('You have payed this order! Please close this page and fresh your order page!')
+    return HttpResponse('The pay of this order has some errors! Please try again!')

@@ -191,7 +191,7 @@ export default {
         class: 1,
         name: command
       }).then(response => {
-        this.src = 'http://127.0.0.1:8000/static/statistic/' + response.data.src
+        this.src = 'http://47.108.209.135:8080/static/statistic/' + response.data.src
         console.log(this.src)
       })
     }

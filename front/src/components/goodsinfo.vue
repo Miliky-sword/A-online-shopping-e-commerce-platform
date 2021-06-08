@@ -80,7 +80,7 @@
             <h3 class="medium">
               <el-image
                 class="carousel-image"
-                :src="item.path"
+                :src="item"
               />
             </h3>
           </el-carousel-item>
@@ -178,7 +178,7 @@ export default {
         information: ''
       }],
       pid: 1,
-      s: '',
+      s: 'http://47.108.209.135:8080/static/media/',
       value: null,
       number: 0,
       iconClasses: ['icon-rate-face-1', 'icon-rate-face-2', 'icon-rate-face-3'], // 等同于 { 2: 'icon-rate-face-1', 4: { value: 'icon-rate-face-2', excluded: true }, 5: 'icon-rate-face-3' }
@@ -219,18 +219,15 @@ export default {
         this.$message.error('failed to load comments')
       })
     },
-    loadpic () {
-      this.$http.post('product/loadPic/', {
+    async loadpic () {
+      await this.$http.post('product/loadPic/', {
         pid: this.pid
       }).then(response => {
         console.log('pic imagarrag')
         console.log(response.data.data.dataArray)
-        this.imgArrag = response.data.data.dataArray
-        this.imgArrag.forEach(element => {
-          this.s = ''
-          this.s = element.path
-          element.path = 'http://127.0.0.1:8000/static/media/' + this.s
-        })
+        for (var i = 0; i < response.data.data.dataArray.length; i++) {
+          this.imgArrag.push(this.s + response.data.data.dataArray[i])
+        }
       })
       console.log(this.imgArrag)
       console.log('333')
@@ -252,7 +249,7 @@ export default {
         this.tableData.forEach(element => {
           this.s = ''
           this.s = element.imageUrl
-          element.imageUrl = 'http://127.0.0.1:8000/static/media/' + this.s
+          element.imageUrl = 'http://47.108.209.135:8080/static/media/' + this.s
         })
         this.$message.success('load products success！')
       }, response => {

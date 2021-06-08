@@ -7,6 +7,7 @@ class Order(models.Model):
         ('Payed', 'Payed'),
         ('Out for delivery', 'Out for delivery'),
         ('Delivered', 'Delivered'),
+        ('Canceling', 'Canceling'),
         ('Canceled', 'Canceled'),
     )
 
@@ -23,3 +24,4 @@ class Order(models.Model):
     fromPhoneNumber = models.CharField(max_length=11, default=12233345556)
     totalprice =  models.FloatField()
     profit = models.FloatField(default=500)
+    ooid = models.CharField(max_length=600, default='no ooid')
