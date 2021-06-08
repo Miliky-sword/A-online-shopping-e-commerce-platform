@@ -71,6 +71,7 @@
       </el-header>
       <el-main class="main">
         <el-table
+          class="table"
           :data="this.orderTableData"
           border
           stripe
@@ -107,6 +108,7 @@
           <el-table-column
             prop="id"
             label="order uid"
+            width="100px"
           />
           <el-table-column
             prop="productName"
@@ -115,14 +117,17 @@
           <el-table-column
             prop="totalprice"
             label="total price"
+            width="150px"
           />
           <el-table-column
             prop="status"
             label="status"
+            width="150px"
           />
           <el-table-column
             prop="inventory"
             label="inventory"
+            width="200px"
           />
           <el-table-column label="operation">
             <template
@@ -316,6 +321,12 @@ export default {
     color: #fff;
     text-align: center;
     cursor: pointer;
+}
+
+.table {
+  width: 75%;
+  left: 12.5%;
+  text-align: center;
 }
 
 .demo-table-expand {

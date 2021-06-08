@@ -117,6 +117,12 @@ def editproductinfo(request) :
         dateinpro = req['date']
         inventory = req['inventory']
         desc = req['desc']
+        cla = req['clvalue']
+        if cla != '' and cla != []:
+            s = 'all;'
+            for i in cla:
+                s += i
+                s += ';'
         pro = Product.objects.filter(id=pid).first()
         if price != '':
             pro.price = float(price)
@@ -128,6 +134,9 @@ def editproductinfo(request) :
             pro.inentory = inventory
         if desc != '' :
             pro.breifDescription = desc
+        if cla != '' and cla != []:
+            pro.classword = s
+            print(s)
         try:
             pro.save()
         except:
@@ -407,9 +416,10 @@ def delpic(request):
         req = json.loads(request.body)
         pid = req['pid']
         path = req['path']
-        print("pid", pid)
+        print("pid", pid, "path", path)
+        p = Pic.objects.filter(productId=pid, path=path)
         try:
-            p = Pic.objects.filter(productId=pid, path=path).delete()
+            p.delete()
             print('p',111,  p)
         except:
             return JsonResponse({
@@ -420,7 +430,6 @@ def delpic(request):
             'status' : 200,
             'msg' : 'delete pictures done'
         })
-
 
 
 

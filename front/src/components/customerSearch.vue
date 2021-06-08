@@ -75,126 +75,146 @@
           <img class="goods2" src="../assets/goods2.png" alt=""> -->
         <!-- 商品基础信息表单 -->
         <template>
-          <div>
-            <el-row>
-              <el-input
-                v-model="input"
-                class="i1"
-                placeholder="请输入内容"
-                size="medium"
-              />
-              <div style="margin: 20px 0;" />
-              <el-button
-                class="b1"
-                type="primary"
-                @click="loadSearchProduct('')"
-              >
-                search
-              </el-button>
-              <el-button
-                class="b2"
-                type="primary"
-                @click="loadSearchProduct('inc')"
-              >
-                sorted by price increase
-              </el-button>
-              <el-button
-                class="b3"
-                type="primary"
-                @click="loadSearchProduct('dec')"
-              >
-                sorted by price decrese
-              </el-button>
-              <el-button
-                class="b4"
-                type="primary"
-                @click="loadSearchProduct('')"
-              >
-                cancel sort
-              </el-button>
-            </el-row>
-            <div style="margin: 40px 0;" />
-          </div>
-          <el-table
-            :data="tableData"
-            style="width: 100%"
-          >
-            <el-table-column type="expand">
-              <template slot-scope="props">
-                <el-form
-                  label-position="left"
-                  inline
-                  class="demo-table-expand"
-                >
-                  <div>
-                    <el-form-item label-position="top">
-                      <el-image
-                        v-for="url in props.row.imageUrl"
-                        :key="url"
-                        :src="url"
-                        style="width: 100px; height: 100px"
-                      />
-                    </el-form-item>
-                  </div>
-                  <el-form-item label="Product id:  ">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="Merchant name:  ">
-                    <span>{{ props.row.merchantName }}</span>
-                  </el-form-item>
-                  <el-form-item label="Date in production：  ">
-                    <span>{{ props.row.dateInProduction }}</span>
-                  </el-form-item>
-                  <el-form-item label="Description：  ">
-                    <span>{{ props.row.briefDescription }}</span>
-                  </el-form-item>
-                </el-form>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="Product Name"
-              prop="productName"
-            />
-            <el-table-column
-              label="Inventory"
-              prop="inventory"
-            />
-            <el-table-column
-              label="Price"
-              prop="price"
-            />
-            <el-table-column
-              label="operation"
-              disabled
-            >
-              <template slot-scope="scope">
+          <div class="alls">
+            <div>
+              <el-row>
+                <el-col :span="12">
+                <el-input
+                  v-model="input"
+                  class="i1"
+                  placeholder="请输入内容"
+                  size="medium"
+                />
+                </el-col>
+                <el-col :offse="20" :span="8">
+                  <el-select
+                    v-model="clvalue"
+                    placeholder="select a category"
+                    @change="loadSearchProduct('')"
+                  >
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                  </el-select>
+                </el-col>
+              </el-row>
+              <el-row>
+                <div style="margin: 20px 0;" />
                 <el-button
+                  class="b1"
                   type="primary"
-                  icon="el-icon-edit"
-                  size="mini"
-                  @click="addToCart(scope.row)"
+                  @click="loadSearchProduct('')"
                 >
-                  add to cart
+                  search
                 </el-button>
                 <el-button
-                  type="warning"
-                  icon="el-icon-setting"
-                  size="mini"
-                  @click="createOrder(scope.row)"
+                  class="b2"
+                  type="primary"
+                  @click="loadSearchProduct('inc')"
                 >
-                  buy now
+                  sorted by price increase
                 </el-button>
                 <el-button
-                  type="warning"
-                  icon="el-icon-setting"
-                  size="mini"
-                  @click="showdetail(scope.row)"
+                  class="b3"
+                  type="primary"
+                  @click="loadSearchProduct('dec')"
                 >
-                  show detail
+                  sorted by price decrese
                 </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+                <el-button
+                  class="b4"
+                  type="primary"
+                  @click="loadSearchProduct('')"
+                >
+                  cancel sort
+                </el-button>
+              </el-row>
+              <div style="margin: 40px 0;" />
+            </div>
+            <el-table
+              :data="tableDataf"
+              style="width: 100%"
+            >
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <el-form
+                    label-position="left"
+                    inline
+                    class="demo-table-expand"
+                  >
+                    <div>
+                      <el-form-item label-position="top">
+                        <el-image
+                          v-for="url in props.row.imageUrl"
+                          :key="url"
+                          :src="url"
+                          style="width: 100px; height: 100px"
+                        />
+                      </el-form-item>
+                    </div>
+                    <el-form-item label="Product id:  ">
+                      <span>{{ props.row.id }}</span>
+                    </el-form-item>
+                    <el-form-item label="Merchant name:  ">
+                      <span>{{ props.row.merchantName }}</span>
+                    </el-form-item>
+                    <el-form-item label="Date in production：  ">
+                      <span>{{ props.row.dateInProduction }}</span>
+                    </el-form-item>
+                    <el-form-item label="Description：  ">
+                      <span>{{ props.row.briefDescription }}</span>
+                    </el-form-item>
+                  </el-form>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="Product Name"
+                prop="productName"
+              />
+              <el-table-column
+                label="Inventory"
+                prop="inventory"
+              />
+              <el-table-column
+                label="Price"
+                prop="price"
+              />
+              <el-table-column
+                label="operation"
+                disabled
+              >
+                <template slot-scope="scope">
+                  <el-button
+                    type="primary"
+                    icon="el-icon-edit"
+                    size="mini"
+                    @click="addToCart(scope.row)"
+                  >
+                    add to cart
+                  </el-button>
+                  <el-button
+                    type="warning"
+                    icon="el-icon-setting"
+                    size="mini"
+                    @click="createOrder(scope.row)"
+                  >
+                    buy now
+                  </el-button>
+                  <el-button
+                    type="warning"
+                    icon="el-icon-setting"
+                    size="mini"
+                    @click="showdetail(scope.row)"
+                  >
+                    show detail
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </template>
       </el-main>
     </el-container>
@@ -206,10 +226,37 @@ export default {
   data () {
     return {
       tableData: [],
+      tableDataf: [],
       s: 'http://47.108.209.135:8080/static/media/',
       input: '',
       imgArrag: [],
-      piclist: []
+      piclist: [],
+      clvalue: 'all',
+      options: [{
+        value: 'all',
+        label: 'all'
+      }, {
+        value: '3C',
+        label: '3C'
+      }, {
+        value: 'Food',
+        label: 'Food'
+      }, {
+        value: 'Clothes',
+        label: 'Clothes'
+      }, {
+        value: 'Drink',
+        label: 'Drink'
+      }, {
+        value: 'Jewelry',
+        label: 'Jewelry'
+      }, {
+        value: 'Skin care',
+        label: 'Skin care'
+      }, {
+        value: 'Others',
+        label: 'Others'
+      }]
     }
   },
   created () {
@@ -246,11 +293,16 @@ export default {
         order: str
       }).then(response => {
         console.log(this.input)
+        this.tableDataf = []
         this.tableData = response.data.data.dataArray
         this.tableData.forEach(element => {
           this.loadpic(element.id).then(res => {
             element.imageUrl = res.pl
           })
+          if (element.classword.match(this.clvalue)) {
+            this.tableDataf.push(element)
+          }
+          console.log(this.tableDataf)
         })
         console.log(this.tableData)
       }, response => {

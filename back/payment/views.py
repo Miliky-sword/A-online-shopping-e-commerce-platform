@@ -70,15 +70,13 @@ def refund(request):
         req = json.loads(request.body)
         # 实例化SDK里面的类AliPay
         alipay = aliPay()
-
+    
         # 对购买的数据进行加密
         money = float(req['price'])  # 保留俩位小数  前端传回的数据
         oid = req['id']
-        id = oid
-        oid = str(oid)
         pname = req['pname']
-        order = Order.objects.filter(id = id).fisrt().values()
-        out_trade_no = order['ooid']
+        order = Order.objects.filter(id = oid).values()
+        out_trade_no = order[0]['ooid']
         print("refund ooid", out_trade_no)
 
         # 1. 在数据库创建一条数据：状态（待支付）
@@ -86,7 +84,7 @@ def refund(request):
         query_params = alipay.api_alipay_trade_refund(
             subject=pname,  # 商品简单描述 这里一般是从前端传过来的数据
             out_trade_no=out_trade_no,  # 商户订单号  这里一般是从前端传过来的数据
-            total_amount=money,  # 交易金额(单位: 元 保留俩位小数)   这里一般是从前端传过来的数据
+            refund_amount=money,  # 交易金额(单位: 元 保留俩位小数)   这里一般是从前端传过来的数据
         )
         # 拼接url，转到支付宝支付页面
         pay_url = "https://openapi.alipaydev.com/gateway.do?{}".format(query_params)
@@ -161,7 +159,7 @@ def update_order(request):
                 #　将支付宝的id存起来
                 order = Order.objects.filter(id = id)
                 try:
-                    order.update(status = 'Canceling')
+                    order.update(status = 'Canceled')
                 except:
                     return JsonResponse({
                         'status' : 500,

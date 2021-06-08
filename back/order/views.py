@@ -29,8 +29,11 @@ def create_order(request):
         product = Product.objects.filter(id=order.productId).first()
         print(product, order.productId)
         order.profit = order.totalprice - order.inventory * product.basePrice
+        inv = product.inventory
+        product.inventory = inv - order.inventory if  inv - order.inventory > 0 else 0
         try:
             order.save()
+            product.save()
         except:
             return JsonResponse({
                 'status' : 500,

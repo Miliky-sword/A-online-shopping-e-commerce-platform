@@ -15,6 +15,7 @@ class Product(models.Model):
     stars = models.FloatField(default=0)
     starsNumber = models.IntegerField(default=0)
     basePrice = models.FloatField(default=575)
+    classword = models.CharField(max_length=100, default='all;')
     
     
 

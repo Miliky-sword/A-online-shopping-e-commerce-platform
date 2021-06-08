@@ -59,7 +59,7 @@ class AliPay(object):
                 biz_content["out_trade_no"] = out_trade_no
             if trade_no:
                 biz_content["trade_no"] = trade_no
-            data = self.build_body("alipay.trade.refund", biz_content, self.return_url)
+            data = self.build_body("alipay.trade.refund", biz_content, return_url = self.return_url)
             url = self.sign_data(data)
             return url
 

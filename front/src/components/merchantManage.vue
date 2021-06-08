@@ -89,6 +89,7 @@
           :data="this.productTableData"
           border
           stripe
+          class="table"
         >
           <el-table-column type="expand">
             <template slot-scope="props">
@@ -126,7 +127,10 @@
             prop="price"
             label="price"
           />
-          <el-table-column label="operation">
+          <el-table-column
+            label="operation"
+            width="600px"
+          >
             <template slot-scope="scope">
               <el-button
                 type="danger"
@@ -296,7 +300,27 @@
         >
           <el-input v-model="editProductForm.desc" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item
+          label="select category"
+          prop="clvalue"
+        >
+          <el-select
+            v-model="clvalue"
+            multiple
+            placeholder="请选择"
+            @change="selectChange"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="uploaded pictures"
+        >
           <el-table
             :data="this.pictableData"
             border
@@ -339,11 +363,36 @@
 export default {
   data () {
     return {
+      clvalue: '',
+      options: [{
+        value: '3C',
+        label: '3C'
+      }, {
+        value: 'Food',
+        label: 'Food'
+      }, {
+        value: 'Clothes',
+        label: 'Clothes'
+      }, {
+        value: 'Drink',
+        label: 'Drink'
+      }, {
+        value: 'Jewelry',
+        label: 'Jewelry'
+      }, {
+        value: 'Skin care',
+        label: 'Skin care'
+      }, {
+        value: 'Others',
+        label: 'Others'
+      }],
       productTableData: [],
       addProductDialogVisible: false,
       editProductDialogVisible: false,
       picdialogVisible: false,
       curruntid: 0,
+      lens: 0,
+      temp: [],
       addProductForm: {
         username: '',
         password: '',
@@ -510,6 +559,8 @@ export default {
     editproduct (row) {
       this.curruntid = row.id
       this.editProductDialogVisible = true
+      this.temp = row.classword.split(';')
+      this.clvalue = this.temp.slice(1, this.temp.length - 1)
       this.loadpic(row.id)
     },
     editProductInfo () {
@@ -519,7 +570,8 @@ export default {
         inventory: this.editProductForm.inventory,
         cost: this.editProductForm.cost,
         date: this.editProductForm.date,
-        desc: this.editProductForm.desc
+        desc: this.editProductForm.desc,
+        clvalue: this.clvalue
       }).then(response => {
         this.editProductDialogVisible = false
         if (response.data.status === 200) {
@@ -534,6 +586,9 @@ export default {
         }
         this.loadAllProduct()
       })
+    },
+    selectChange () {
+      console.log(this.clvalue)
     },
     openmessage (str1, str2) {
       this.$alert(str1, str2, {
@@ -570,6 +625,11 @@ export default {
 
 .el-main {
     background: #EAEDF1;
+}
+
+.table {
+  width: 75%;
+  left: 12.5%;
 }
 
 .toggle-button{
